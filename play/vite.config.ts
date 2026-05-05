@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      '@ai-chat/vue': resolve(projectRoot, 'src/index.ts'),
+      '@weimin96/ai-chat-vue': resolve(projectRoot, 'src/index.ts'),
       '@': resolve(projectRoot, 'src'),
     },
   },

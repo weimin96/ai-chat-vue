@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { ChatProvider, ConversationList, useChat } from '@ai-chat/vue'
+import { ChatProvider, ConversationList, useChat } from '@weimin96/ai-chat-vue'
 
 function SeedConversations() {
   const chat = useChat()

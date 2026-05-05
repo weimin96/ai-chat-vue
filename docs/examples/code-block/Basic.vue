@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { CodeBlock } from '@ai-chat/vue'
+import { CodeBlock } from '@weimin96/ai-chat-vue'
 
-const code = `import { ChatProvider } from '@ai-chat/vue'
+const code = `import { ChatProvider } from '@weimin96/ai-chat-vue'
 
 export function setup() {
   return ChatProvider

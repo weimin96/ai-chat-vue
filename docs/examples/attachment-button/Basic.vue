@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { AttachmentButton } from '@ai-chat/vue'
+import { AttachmentButton } from '@weimin96/ai-chat-vue'
 
 const fileCount = ref(0)
 </script>

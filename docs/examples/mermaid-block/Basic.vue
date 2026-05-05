@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MermaidBlock } from '@ai-chat/vue'
+import { MermaidBlock } from '@weimin96/ai-chat-vue'
 
 const code = `flowchart LR
   A["用户输入"] --> B["发送消息"]

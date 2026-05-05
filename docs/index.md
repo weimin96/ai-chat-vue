@@ -1,4 +1,4 @@
-# @ai-chat/vue
+# @weimin96/ai-chat-vue
 
 面向 Vue 3 的 AI 聊天组件库，提供会话容器、消息气泡、输入框、Markdown、工具调用和 Artifact 预览能力。
 
@@ -18,4 +18,4 @@
 
 ## 目录约定
 
-`play/` 用于开发调试，`docs/` 用于用户阅读和组件示例。文档示例通过 `@ai-chat/vue` alias 直接引用源码导出面。
+`play/` 用于开发调试，`docs/` 用于用户阅读和组件示例。文档示例通过 `@weimin96/ai-chat-vue` alias 直接引用源码导出面。

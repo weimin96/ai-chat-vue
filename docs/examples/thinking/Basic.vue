@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Thinking } from '@ai-chat/vue'
+import { Thinking } from '@weimin96/ai-chat-vue'
 import { sampleThinking } from '../../.vitepress/theme/demo-data'
 </script>
 

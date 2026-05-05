@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MessageActions } from '@ai-chat/vue'
+import { MessageActions } from '@weimin96/ai-chat-vue'
 import { sampleMessages } from '../../.vitepress/theme/demo-data'
 </script>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MessageAvatar } from '@ai-chat/vue'
+import { MessageAvatar } from '@weimin96/ai-chat-vue'
 </script>
 
 <template>

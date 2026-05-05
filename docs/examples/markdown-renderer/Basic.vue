@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MarkdownRenderer } from '@ai-chat/vue'
+import { MarkdownRenderer } from '@weimin96/ai-chat-vue'
 
 const content = `# Markdown 示例
 

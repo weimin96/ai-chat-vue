@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { PromptCards } from '@ai-chat/vue'
+import { PromptCards } from '@weimin96/ai-chat-vue'
 import { promptCards } from '../../.vitepress/theme/demo-data'
 
 const selected = ref('尚未选择')

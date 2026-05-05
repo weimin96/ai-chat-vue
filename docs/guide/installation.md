@@ -9,20 +9,20 @@
 ## 安装依赖
 
 ```powershell
-npm install @ai-chat/vue
+npm install @weimin96/ai-chat-vue
 ```
 
 ## 引入样式
 
 ```ts
-import '@ai-chat/vue/styles'
+import '@weimin96/ai-chat-vue/styles'
 ```
 
 ## 使用组件
 
 ```vue
 <script setup lang="ts">
-import { ChatProvider, ChatContainer } from '@ai-chat/vue'
+import { ChatProvider, ChatContainer } from '@weimin96/ai-chat-vue'
 </script>
 
 <template>

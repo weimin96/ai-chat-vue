@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ToolCallCard } from '@ai-chat/vue'
+import { ToolCallCard } from '@weimin96/ai-chat-vue'
 import { sampleToolCall } from '../../.vitepress/theme/demo-data'
 </script>
 

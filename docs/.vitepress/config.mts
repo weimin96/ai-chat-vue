@@ -4,7 +4,7 @@ import { resolve } from 'path'
 const projectRoot = resolve(__dirname, '../..')
 
 export default defineConfig({
-  title: '@ai-chat/vue',
+  title: '@weimin96/ai-chat-vue',
   description: 'Vue 3 AI 聊天组件库文档',
   lang: 'zh-CN',
   base: '/ai-chat-vue/',
@@ -83,7 +83,7 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: {
-        '@ai-chat/vue': resolve(projectRoot, 'src/index.ts'),
+        '@weimin96/ai-chat-vue': resolve(projectRoot, 'src/index.ts'),
         '@': resolve(projectRoot, 'src'),
       },
     },

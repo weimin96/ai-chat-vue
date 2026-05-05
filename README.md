@@ -1,4 +1,4 @@
-# @ai-chat/vue
+# @weimin96/ai-chat-vue
 
 > **Powerful Vue 3 + TailwindCSS AI Chat UI Component Library**
 
@@ -25,28 +25,28 @@ A complete, production-ready component library for building AI chat interfaces �
 ## 📦 Installation
 
 ```bash
-npm install @ai-chat/vue
+npm install @weimin96/ai-chat-vue
 ```
 
 Add to your Tailwind config:
 ```js
 // tailwind.config.js
 export default {
-  content: ['./node_modules/@ai-chat/vue/dist/**/*.js'],
+  content: ['./node_modules/@weimin96/ai-chat-vue/dist/**/*.js'],
   // ...
 }
 ```
 
 Import styles:
 ```js
-import '@ai-chat/vue/styles'
+import '@weimin96/ai-chat-vue/styles'
 ```
 
 ## 🚀 Quick Start
 
 ```vue
 <script setup>
-import { ChatProvider, ChatContainer, ConversationList, createOpenAIAdapter } from '@ai-chat/vue'
+import { ChatProvider, ChatContainer, ConversationList, createOpenAIAdapter } from '@weimin96/ai-chat-vue'
 
 const adapter = createOpenAIAdapter({ apiKey: import.meta.env.VITE_OPENAI_KEY })
 </script>
@@ -109,7 +109,7 @@ Override CSS variables on `.ac-root` or `:root`:
 
 ### OpenAI / Compatible APIs
 ```js
-import { createOpenAIAdapter } from '@ai-chat/vue'
+import { createOpenAIAdapter } from '@weimin96/ai-chat-vue'
 
 const adapter = createOpenAIAdapter({
   apiKey: 'sk-...',
@@ -120,7 +120,7 @@ const adapter = createOpenAIAdapter({
 
 ### Ollama (local)
 ```js
-import { createOllamaAdapter } from '@ai-chat/vue'
+import { createOllamaAdapter } from '@weimin96/ai-chat-vue'
 
 const adapter = createOllamaAdapter({
   baseURL: 'http://localhost:11434',
@@ -130,7 +130,7 @@ const adapter = createOllamaAdapter({
 
 ### Custom
 ```js
-import { createCustomAdapter } from '@ai-chat/vue'
+import { createCustomAdapter } from '@weimin96/ai-chat-vue'
 
 const adapter = createCustomAdapter(async function* (messages, config, signal) {
   // Yield StreamChunk objects
@@ -186,7 +186,7 @@ const {
 ## 📁 Project Structure
 
 ```
-@ai-chat/vue
+@weimin96/ai-chat-vue
 ├─ components/
 │  ├─ Chat/          ChatProvider, ChatContainer, ConversationList
 │  ├─ Bubble/        Bubble, BubbleList, MessageAvatar, MessageActions
@@ -228,8 +228,8 @@ All logic is available **headless** — zero CSS, bring your own design system (
 
 ```vue
 <script setup>
-import { useHeadlessSender } from '@ai-chat/vue'
-import { useChat } from '@ai-chat/vue'
+import { useHeadlessSender } from '@weimin96/ai-chat-vue'
+import { useChat } from '@weimin96/ai-chat-vue'
 
 const { sendMessage, stopGeneration, isGenerating } = useChat()
 
@@ -270,7 +270,7 @@ const sender = useHeadlessSender({
 
 ```vue
 <script setup>
-import { HeadlessBubble, HeadlessToolCall, HeadlessThinking } from '@ai-chat/vue'
+import { HeadlessBubble, HeadlessToolCall, HeadlessThinking } from '@weimin96/ai-chat-vue'
 </script>
 
 <template>

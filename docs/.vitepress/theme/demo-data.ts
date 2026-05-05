@@ -4,7 +4,7 @@ import type {
   StreamAdapter,
   StreamChunk,
   ToolCall,
-} from '@ai-chat/vue'
+} from '@weimin96/ai-chat-vue'
 
 export const sampleThinking = [
   {

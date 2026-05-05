@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChatProvider, ChatContainer } from '@ai-chat/vue'
+import { ChatProvider, ChatContainer } from '@weimin96/ai-chat-vue'
 import {
   demoAdapter,
   promptCards,

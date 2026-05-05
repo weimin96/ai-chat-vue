@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Sender } from '@ai-chat/vue'
+import { Sender } from '@weimin96/ai-chat-vue'
 
 const lastMessage = ref('尚未发送消息')
 </script>

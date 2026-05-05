@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { ChatContainer, ChatProvider, type StreamAdapter } from '@ai-chat/vue'
-import type { StreamChunk } from '@ai-chat/vue'
+import { ChatContainer, ChatProvider, type StreamAdapter } from '@weimin96/ai-chat-vue'
+import type { StreamChunk } from '@weimin96/ai-chat-vue'
 
 const playConfig = {
   model: 'play-local',
@@ -51,7 +51,7 @@ const playAdapter: StreamAdapter = {
 
 const playPoints = computed(() => [
   'npm run dev 直接启动 play 应用',
-  'play 通过 @ai-chat/vue 引用 src/index.ts',
+  'play 通过 @weimin96/ai-chat-vue 引用 src/index.ts',
   '库构建配置与演示应用配置互不混用',
 ])
 
@@ -71,7 +71,7 @@ function createPlayChunks(input: string): StreamChunk[] {
     },
     {
       type: 'text',
-      content: '- 组件通过 `@ai-chat/vue` 导入，并由 alias 指向源码入口。\n',
+      content: '- 组件通过 `@weimin96/ai-chat-vue` 导入，并由 alias 指向源码入口。\n',
     },
     {
       type: 'text',
@@ -80,7 +80,7 @@ function createPlayChunks(input: string): StreamChunk[] {
     {
       type: 'text',
       content:
-        '```ts\nimport { ChatProvider, ChatContainer } from "@ai-chat/vue"\n```\n',
+        '```ts\nimport { ChatProvider, ChatContainer } from "@weimin96/ai-chat-vue"\n```\n',
     },
   ]
 }
@@ -95,7 +95,7 @@ function delay(milliseconds: number) {
     <aside class="play-sidebar">
       <div>
         <p class="play-eyebrow">本地组件实验台</p>
-        <h1>@ai-chat/vue</h1>
+        <h1>@weimin96/ai-chat-vue</h1>
         <p class="play-summary">
           独立 play 应用用于验证组件库源码导出面，避免把库根目录伪装成页面项目。
         </p>

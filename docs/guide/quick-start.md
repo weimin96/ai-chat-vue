@@ -12,8 +12,8 @@ import Basic from '../examples/chat-container/Basic.vue'
 
 ```vue
 <script setup lang="ts">
-import { ChatProvider, ChatContainer } from '@ai-chat/vue'
-import type { StreamAdapter } from '@ai-chat/vue'
+import { ChatProvider, ChatContainer } from '@weimin96/ai-chat-vue'
+import type { StreamAdapter } from '@weimin96/ai-chat-vue'
 
 const adapter: StreamAdapter = {
   name: 'custom',
