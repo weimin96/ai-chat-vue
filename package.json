@@ -1,6 +1,6 @@
 {
-  "name": "@ai-chat/vue",
-  "version": "1.0.0",
+  "name": "@weimin96/ai-chat-vue",
+  "version": "0.0.1",
   "description": "A powerful Vue 3 + TailwindCSS AI Chat UI component library",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",

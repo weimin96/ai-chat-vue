@@ -1,0 +1,77 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - v*.*.*
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Release
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate tag version
+        id: version
+        run: |
+          $tagName = "${{ github.ref_name }}"
+          $version = $tagName -replace '^v', ''
+          $packageVersion = node -p "require('./package.json').version"
+          if ($packageVersion -ne $version) {
+            Write-Error "tag 版本 $version 与 package.json 版本 $packageVersion 不一致"
+            exit 1
+          }
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "version=$version"
+
+      - name: Extract release notes
+        run: node scripts/extract-changelog.mjs "${{ github.ref_name }}"
+
+      - name: Build library
+        run: npm run build
+
+      - name: Check package contents
+        run: npm pack --dry-run
+
+      - name: Create package tarball
+        id: pack
+        run: |
+          $packResult = @(npm pack --json | ConvertFrom-Json)
+          $tarball = $packResult[0].filename
+          if (-not (Test-Path $tarball)) {
+            Write-Error "npm pack 未生成 tarball: $tarball"
+            exit 1
+          }
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "tarball=$tarball"
+
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish "${{ steps.pack.outputs.tarball }}" --access public
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${{ github.ref_name }}" "${{ steps.pack.outputs.tarball }}" --title "${{ github.ref_name }}" --notes-file .release-notes.md --verify-tag

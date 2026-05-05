@@ -7,6 +7,7 @@ export default defineConfig({
   title: '@ai-chat/vue',
   description: 'Vue 3 AI 聊天组件库文档',
   lang: 'zh-CN',
+  base: '/ai-chat-vue/',
   cleanUrls: true,
   themeConfig: {
     logo: '/logo.svg',
