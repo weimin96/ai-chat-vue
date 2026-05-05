@@ -1,14 +1,21 @@
 <script setup>
 import Basic from '../examples/message-avatar/Basic.vue'
+import source from '../examples/message-avatar/Basic.vue?raw'
 </script>
 
 # MessageAvatar
 
 `MessageAvatar` 根据消息角色渲染头像，支持自定义图片地址。
 
+## 导入方式
+
+<ComponentImport name="MessageAvatar" />
+
 ## 基础用法
 
-<Basic />
+<ExampleBlock :source="source">
+  <Basic />
+</ExampleBlock>
 
 ## API
 

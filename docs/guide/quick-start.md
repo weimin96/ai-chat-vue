@@ -1,12 +1,21 @@
+<script setup>
+import Basic from '../examples/chat-container/Basic.vue'
+import source from '../examples/chat-container/Basic.vue?raw'
+</script>
+
 # 快速开始
 
 下面示例使用本地 mock 适配器演示流式回复。实际项目中可替换为 OpenAI、Ollama 或自定义后端。
 
-<script setup>
-import Basic from '../examples/chat-container/Basic.vue'
-</script>
+## 使用说明
 
-<Basic />
+1. 在应用入口引入 `@weimin96/ai-chat-vue/styles`。
+2. 使用 `ChatProvider` 包裹聊天区域，并传入 `StreamAdapter`。
+3. 在 `ChatProvider` 内放置 `ChatContainer` 或按需组合消息、输入框等组件。
+
+<ExampleBlock :source="source" layout="split">
+  <Basic />
+</ExampleBlock>
 
 ## 最小结构
 

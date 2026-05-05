@@ -1,14 +1,21 @@
 <script setup>
 import Basic from '../examples/markdown-renderer/Basic.vue'
+import source from '../examples/markdown-renderer/Basic.vue?raw'
 </script>
 
 # MarkdownRenderer
 
 `MarkdownRenderer` 渲染助手消息中的 Markdown 内容。
 
+## 导入方式
+
+<ComponentImport name="MarkdownRenderer" />
+
 ## 基础用法
 
-<Basic />
+<ExampleBlock :source="source">
+  <Basic />
+</ExampleBlock>
 
 ## API
 

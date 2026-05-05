@@ -1,14 +1,21 @@
 <script setup>
 import Basic from '../examples/chat-provider/Basic.vue'
+import source from '../examples/chat-provider/Basic.vue?raw'
 </script>
 
 # ChatProvider
 
 `ChatProvider` 提供聊天上下文、配置和流式适配器。所有依赖 `useChat()` 的组件都必须放在 Provider 内部。
 
+## 导入方式
+
+<ComponentImport name="ChatProvider" />
+
 ## 基础用法
 
-<Basic />
+<ExampleBlock :source="source">
+  <Basic />
+</ExampleBlock>
 
 ## API
 

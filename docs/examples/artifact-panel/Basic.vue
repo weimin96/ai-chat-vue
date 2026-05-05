@@ -4,9 +4,5 @@ import { sampleArtifact } from '../../.vitepress/theme/demo-data'
 </script>
 
 <template>
-  <div class="demo-card">
-    <div class="demo-card__preview">
-      <ArtifactPanel :artifact="sampleArtifact" />
-    </div>
-  </div>
+  <ArtifactPanel :artifact="sampleArtifact" />
 </template>

@@ -1,14 +1,21 @@
 <script setup>
 import Basic from '../examples/tool-call-card/Basic.vue'
+import source from '../examples/tool-call-card/Basic.vue?raw'
 </script>
 
 # ToolCallCard
 
 `ToolCallCard` 展示工具调用名称、状态、参数、结果和错误信息。
 
+## 导入方式
+
+<ComponentImport name="ToolCallCard" />
+
 ## 基础用法
 
-<Basic />
+<ExampleBlock :source="source">
+  <Basic />
+</ExampleBlock>
 
 ## API
 

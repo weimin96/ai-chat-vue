@@ -8,9 +8,5 @@ const code = `flowchart LR
 </script>
 
 <template>
-  <div class="demo-card">
-    <div class="demo-card__preview">
-      <MermaidBlock id="docs-basic-flow" :code="code" />
-    </div>
-  </div>
+  <MermaidBlock id="docs-basic-flow" :code="code" />
 </template>

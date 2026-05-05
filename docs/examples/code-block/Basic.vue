@@ -9,14 +9,10 @@ export function setup() {
 </script>
 
 <template>
-  <div class="demo-card">
-    <div class="demo-card__preview">
-      <CodeBlock
-        language="typescript"
-        filename="usage.ts"
-        :code="code"
-        show-line-numbers
-      />
-    </div>
-  </div>
+  <CodeBlock
+    language="typescript"
+    filename="usage.ts"
+    :code="code"
+    show-line-numbers
+  />
 </template>

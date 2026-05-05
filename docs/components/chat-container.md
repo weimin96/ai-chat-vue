@@ -1,14 +1,21 @@
 <script setup>
 import Basic from '../examples/chat-container/Basic.vue'
+import source from '../examples/chat-container/Basic.vue?raw'
 </script>
 
 # ChatContainer
 
 `ChatContainer` 组合欢迎页、消息列表和输入框，适合作为完整聊天界面的主体。
 
+## 导入方式
+
+<ComponentImport name="ChatContainer" />
+
 ## 基础用法
 
-<Basic />
+<ExampleBlock :source="source">
+  <Basic />
+</ExampleBlock>
 
 ## API
 

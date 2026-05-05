@@ -1,14 +1,21 @@
 <script setup>
 import Basic from '../examples/sender/Basic.vue'
+import source from '../examples/sender/Basic.vue?raw'
 </script>
 
 # Sender
 
 `Sender` 是聊天输入框，支持建议项、附件、语音按钮、发送和停止生成状态。
 
+## 导入方式
+
+<ComponentImport name="Sender" />
+
 ## 基础用法
 
-<Basic />
+<ExampleBlock :source="source">
+  <Basic />
+</ExampleBlock>
 
 ## API
 

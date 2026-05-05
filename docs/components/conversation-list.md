@@ -1,14 +1,21 @@
 <script setup>
 import Basic from '../examples/conversation-list/Basic.vue'
+import source from '../examples/conversation-list/Basic.vue?raw'
 </script>
 
 # ConversationList
 
 `ConversationList` 展示会话列表、置顶会话和最近会话，并提供新建、重命名、置顶、归档、删除和导出入口。
 
+## 导入方式
+
+<ComponentImport name="ConversationList" />
+
 ## 基础用法
 
-<Basic />
+<ExampleBlock :source="source">
+  <Basic />
+</ExampleBlock>
 
 ## API
 

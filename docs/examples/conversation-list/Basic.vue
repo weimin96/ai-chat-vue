@@ -17,14 +17,10 @@ function SeedConversations() {
 </script>
 
 <template>
-  <div class="demo-card">
-    <div class="demo-card__preview">
-      <div style="height: 360px; max-width: 340px">
-        <ChatProvider>
-          <SeedConversations />
-          <ConversationList />
-        </ChatProvider>
-      </div>
-    </div>
+  <div style="height: 360px; max-width: 340px">
+    <ChatProvider>
+      <SeedConversations />
+      <ConversationList />
+    </ChatProvider>
   </div>
 </template>

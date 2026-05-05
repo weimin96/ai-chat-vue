@@ -4,9 +4,7 @@ import { sampleToolCall } from '../../.vitepress/theme/demo-data'
 </script>
 
 <template>
-  <div class="demo-card">
-    <div class="demo-card__preview docs-narrow">
-      <ToolCallCard :tool-call="sampleToolCall" />
-    </div>
+  <div class="docs-narrow">
+    <ToolCallCard :tool-call="sampleToolCall" />
   </div>
 </template>

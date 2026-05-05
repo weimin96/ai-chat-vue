@@ -1,14 +1,21 @@
 <script setup>
 import Basic from '../examples/message-actions/Basic.vue'
+import source from '../examples/message-actions/Basic.vue?raw'
 </script>
 
 # MessageActions
 
 `MessageActions` 提供复制、重试、编辑和删除等消息操作入口。
 
+## 导入方式
+
+<ComponentImport name="MessageActions" />
+
 ## 基础用法
 
-<Basic />
+<ExampleBlock :source="source">
+  <Basic />
+</ExampleBlock>
 
 ## API
 

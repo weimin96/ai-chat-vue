@@ -1,14 +1,21 @@
 <script setup>
 import Basic from '../examples/bubble/Basic.vue'
+import source from '../examples/bubble/Basic.vue?raw'
 </script>
 
 # Bubble
 
 `Bubble` 渲染单条消息，自动处理用户与助手布局，并组合头像、推理过程、工具调用、Artifact 和消息操作。
 
+## 导入方式
+
+<ComponentImport name="Bubble" />
+
 ## 基础用法
 
-<Basic />
+<ExampleBlock :source="source">
+  <Basic />
+</ExampleBlock>
 
 ## API
 

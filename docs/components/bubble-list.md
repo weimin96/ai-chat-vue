@@ -1,14 +1,21 @@
 <script setup>
 import Basic from '../examples/bubble-list/Basic.vue'
+import source from '../examples/bubble-list/Basic.vue?raw'
 </script>
 
 # BubbleList
 
 `BubbleList` 渲染消息数组，并在新增消息或流式输出时自动滚动到底部。
 
+## 导入方式
+
+<ComponentImport name="BubbleList" />
+
 ## 基础用法
 
-<Basic />
+<ExampleBlock :source="source">
+  <Basic />
+</ExampleBlock>
 
 ## API
 

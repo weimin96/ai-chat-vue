@@ -1,14 +1,21 @@
 <script setup>
 import Basic from '../examples/thinking/Basic.vue'
+import source from '../examples/thinking/Basic.vue?raw'
 </script>
 
 # Thinking
 
 `Thinking` 展示模型推理过程，支持折叠和展开。
 
+## 导入方式
+
+<ComponentImport name="Thinking" />
+
 ## 基础用法
 
-<Basic />
+<ExampleBlock :source="source">
+  <Basic />
+</ExampleBlock>
 
 ## API
 

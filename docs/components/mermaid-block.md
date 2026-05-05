@@ -1,14 +1,21 @@
 <script setup>
 import Basic from '../examples/mermaid-block/Basic.vue'
+import source from '../examples/mermaid-block/Basic.vue?raw'
 </script>
 
 # MermaidBlock
 
 `MermaidBlock` 使用 Mermaid 渲染流程图、时序图等图表内容。
 
+## 导入方式
+
+<ComponentImport name="MermaidBlock" />
+
 ## 基础用法
 
-<Basic />
+<ExampleBlock :source="source">
+  <Basic />
+</ExampleBlock>
 
 ## API
 

@@ -14,9 +14,7 @@ const message = 'hello'
 </script>
 
 <template>
-  <div class="demo-card">
-    <div class="demo-card__preview docs-narrow">
-      <MarkdownRenderer :content="content" />
-    </div>
+  <div class="docs-narrow">
+    <MarkdownRenderer :content="content" />
   </div>
 </template>

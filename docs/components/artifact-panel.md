@@ -1,14 +1,21 @@
 <script setup>
 import Basic from '../examples/artifact-panel/Basic.vue'
+import source from '../examples/artifact-panel/Basic.vue?raw'
 </script>
 
 # ArtifactPanel
 
 `ArtifactPanel` 展示 HTML、Markdown、JSON 或代码类 Artifact，并提供预览与源码切换。
 
+## 导入方式
+
+<ComponentImport name="ArtifactPanel" />
+
 ## 基础用法
 
-<Basic />
+<ExampleBlock :source="source">
+  <Basic />
+</ExampleBlock>
 
 ## API
 

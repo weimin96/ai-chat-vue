@@ -1,14 +1,21 @@
 <script setup>
 import Basic from '../examples/prompt-cards/Basic.vue'
+import source from '../examples/prompt-cards/Basic.vue?raw'
 </script>
 
 # PromptCards
 
 `PromptCards` 用卡片展示提示词，适合放在欢迎页中引导用户开始对话。
 
+## 导入方式
+
+<ComponentImport name="PromptCards" />
+
 ## 基础用法
 
-<Basic />
+<ExampleBlock :source="source">
+  <Basic />
+</ExampleBlock>
 
 ## API
 

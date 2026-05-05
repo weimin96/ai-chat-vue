@@ -1,14 +1,21 @@
 <script setup>
 import Basic from '../examples/code-block/Basic.vue'
+import source from '../examples/code-block/Basic.vue?raw'
 </script>
 
 # CodeBlock
 
 `CodeBlock` 展示代码片段，支持复制、行号、折叠和运行按钮。
 
+## 导入方式
+
+<ComponentImport name="CodeBlock" />
+
 ## 基础用法
 
-<Basic />
+<ExampleBlock :source="source">
+  <Basic />
+</ExampleBlock>
 
 ## API
 
