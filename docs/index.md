@@ -1,5 +1,11 @@
 # @weimin96/ai-chat-vue
 
+<p align="center">
+  <img src="/icon.svg" alt="@weimin96/ai-chat-vue icon" width="84">
+  <br>
+  <img src="/logo.svg" alt="@weimin96/ai-chat-vue logo" width="520">
+</p>
+
 面向 Vue 3 的 AI 聊天组件库，提供会话容器、消息气泡、输入框、Markdown、工具调用和 Artifact 预览能力。
 
 ## 核心能力

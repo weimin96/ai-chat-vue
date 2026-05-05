@@ -1,5 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="@weimin96/ai-chat-vue">
-  <rect width="64" height="64" rx="16" fill="#0f766e"/>
-  <path d="M18 19h28a8 8 0 0 1 8 8v7a8 8 0 0 1-8 8H33l-9 7v-7h-6a8 8 0 0 1-8-8v-7a8 8 0 0 1 8-8Z" fill="#fff"/>
-  <path d="M23 31h18M23 37h11" stroke="#0f766e" stroke-width="4" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 160" role="img" aria-label="@weimin96/ai-chat-vue">
+  <defs>
+    <linearGradient id="logo-bg" x1="64" y1="24" x2="128" y2="136" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#14b8a6"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="logo-accent" x1="80" y1="48" x2="124" y2="108" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ecfeff"/>
+      <stop offset="1" stop-color="#dbeafe"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="160" rx="32" fill="#f8fafc"/>
+  <rect x="36" y="28" width="104" height="104" rx="28" fill="url(#logo-bg)"/>
+  <path d="M68 58h42a18 18 0 0 1 18 18v10a18 18 0 0 1-18 18H94l-20 18v-18h-6a18 18 0 0 1-18-18V76a18 18 0 0 1 18-18Z" fill="url(#logo-accent)"/>
+  <path d="M72 80h34M72 94h22" stroke="#0f766e" stroke-width="8" stroke-linecap="round"/>
+  <text x="176" y="84" fill="#0f172a" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="800">AI Chat</text>
+  <text x="400" y="84" fill="#2563eb" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="800">Vue</text>
+  <text x="178" y="120" fill="#475569" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="600">Vue 3 AI chat component library</text>
+  <text x="178" y="146" fill="#64748b" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="600">@weimin96/ai-chat-vue</text>
 </svg>

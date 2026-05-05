@@ -8,9 +8,10 @@ export default defineConfig({
   description: 'Vue 3 AI 聊天组件库文档',
   lang: 'zh-CN',
   base: '/',
+  head: [['link', { rel: 'icon', href: '/icon.svg', type: 'image/svg+xml' }]],
   cleanUrls: true,
   themeConfig: {
-    logo: '/logo.svg',
+    logo: '/icon.svg',
     nav: [
       { text: '指南', link: '/guide/installation' },
       { text: '组件', link: '/components/chat-provider' },

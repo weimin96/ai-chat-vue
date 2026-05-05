@@ -1,5 +1,11 @@
 # @weimin96/ai-chat-vue
 
+<p align="center">
+  <img src="docs/public/icon.svg" alt="@weimin96/ai-chat-vue icon" width="84">
+  <br>
+  <img src="docs/public/logo.svg" alt="@weimin96/ai-chat-vue logo" width="520">
+</p>
+
 > **Powerful Vue 3 + TailwindCSS AI Chat UI Component Library**
 
 A complete, production-ready component library for building AI chat interfaces — inspired by Ant Design X Vue, Element Plus X, and TDesign Chat.
@@ -407,4 +413,3 @@ import { HeadlessBubble, HeadlessToolCall, HeadlessThinking } from '@weimin96/ai
 | `lines / lineCount` | `ComputedRef` | Parsed lines |
 | `toggle / copy / run` | functions | Actions |
 | `toggleAttrs / copyButtonAttrs / preAttrs` | objects | ARIA attrs |
-
