@@ -1,0 +1,169 @@
+@import 'tailwindcss';
+@config "../tailwind.config.cjs";
+
+:root {
+  --ac-primary: #0f766e;
+  --ac-bg: #f7f4ee;
+  --ac-surface: #fffaf0;
+  --ac-border: #d8d0c0;
+  --ac-text: #1f2933;
+  --ac-muted: #687076;
+  --ac-hover: #eee7d8;
+  --ac-input-bg: #fffdf7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    linear-gradient(135deg, rgba(15, 118, 110, 0.13), transparent 34%),
+    linear-gradient(315deg, rgba(185, 91, 44, 0.12), transparent 30%),
+    var(--ac-bg);
+  color: var(--ac-text);
+  font-family: 'Aptos', 'Segoe UI', sans-serif;
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+.play-shell {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.play-sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 48px;
+  padding: 44px 36px;
+  border-right: 1px solid rgba(31, 41, 51, 0.12);
+  background: rgba(255, 250, 240, 0.72);
+  backdrop-filter: blur(20px);
+}
+
+.play-eyebrow {
+  margin: 0 0 10px;
+  color: var(--ac-primary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.play-sidebar h1,
+.play-header h2 {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.play-sidebar h1 {
+  font-size: clamp(40px, 6vw, 68px);
+  line-height: 0.92;
+}
+
+.play-summary {
+  max-width: 26rem;
+  margin: 20px 0 0;
+  color: var(--ac-muted);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.play-points {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.play-points li {
+  border-left: 3px solid var(--ac-primary);
+  padding: 10px 0 10px 14px;
+  color: #35414a;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.play-main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+  padding: 32px;
+}
+
+.play-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.play-header h2 {
+  font-size: clamp(26px, 3vw, 42px);
+}
+
+.play-badge {
+  flex-shrink: 0;
+  border: 1px solid rgba(15, 118, 110, 0.28);
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: rgba(255, 250, 240, 0.74);
+  color: var(--ac-primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.play-chat-card {
+  min-height: 0;
+  height: calc(100vh - 150px);
+  overflow: hidden;
+  border: 1px solid rgba(31, 41, 51, 0.14);
+  border-radius: 8px;
+  background: var(--ac-surface);
+  box-shadow: 0 24px 80px rgba(31, 41, 51, 0.12);
+}
+
+.play-chat-card .ac-container {
+  height: 100%;
+}
+
+@media (max-width: 860px) {
+  .play-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .play-sidebar {
+    gap: 24px;
+    padding: 28px 22px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(31, 41, 51, 0.12);
+  }
+
+  .play-main {
+    padding: 22px;
+  }
+
+  .play-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .play-chat-card {
+    height: 72vh;
+  }
+}

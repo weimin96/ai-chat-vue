@@ -1,0 +1,219 @@
+// ============================================================
+// useChat - Core Chat Composable
+// ============================================================
+import { ref, computed, inject, provide, type InjectionKey } from 'vue'
+import type { Message, Conversation, ChatConfig, StreamAdapter, StreamChunk } from '../types'
+
+const CHAT_KEY: InjectionKey<ReturnType<typeof createChatState>> = Symbol('ai-chat')
+
+function createChatState(config: ChatConfig, adapter: StreamAdapter | null) {
+  const conversations = ref<Conversation[]>([])
+  const activeId = ref<string | null>(null)
+  const isGenerating = ref(false)
+  const abortController = ref<AbortController | null>(null)
+
+  const activeConversation = computed(() =>
+    conversations.value.find(c => c.id === activeId.value) ?? null
+  )
+
+  const messages = computed(() => activeConversation.value?.messages ?? [])
+
+  function createConversation(title = 'New Conversation'): Conversation {
+    const conv: Conversation = {
+      id: crypto.randomUUID(),
+      title,
+      messages: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    }
+    conversations.value.unshift(conv)
+    activeId.value = conv.id
+    return conv
+  }
+
+  function deleteConversation(id: string) {
+    const idx = conversations.value.findIndex(c => c.id === id)
+    if (idx !== -1) conversations.value.splice(idx, 1)
+    if (activeId.value === id) {
+      activeId.value = conversations.value[0]?.id ?? null
+    }
+  }
+
+  function renameConversation(id: string, title: string) {
+    const conv = conversations.value.find(c => c.id === id)
+    if (conv) conv.title = title
+  }
+
+  function pinConversation(id: string, pinned: boolean) {
+    const conv = conversations.value.find(c => c.id === id)
+    if (conv) conv.isPinned = pinned
+  }
+
+  function addMessage(msg: Omit<Message, 'id' | 'timestamp'>): Message {
+    if (!activeId.value) createConversation()
+    const conv = activeConversation.value!
+    const message: Message = { ...msg, id: crypto.randomUUID(), timestamp: Date.now() }
+    conv.messages.push(message)
+    conv.updatedAt = Date.now()
+    // Auto-title from first user message
+    if (conv.title === 'New Conversation' && msg.role === 'user') {
+      conv.title = msg.content.slice(0, 40) + (msg.content.length > 40 ? '...' : '')
+    }
+    return message
+  }
+
+  function updateMessage(id: string, updates: Partial<Message>) {
+    const conv = activeConversation.value
+    if (!conv) return
+    const msg = conv.messages.find(m => m.id === id)
+    if (msg) Object.assign(msg, updates)
+  }
+
+  function deleteMessage(id: string) {
+    const conv = activeConversation.value
+    if (!conv) return
+    const idx = conv.messages.findIndex(m => m.id === id)
+    if (idx !== -1) conv.messages.splice(idx, 1)
+  }
+
+  async function sendMessage(content: string) {
+    if (!adapter || isGenerating.value) return
+    if (!activeId.value) createConversation()
+
+    addMessage({ role: 'user', content })
+
+    const assistantMsg = addMessage({
+      role: 'assistant',
+      content: '',
+      isStreaming: true,
+    })
+
+    isGenerating.value = true
+    abortController.value = new AbortController()
+
+    try {
+      const stream = adapter.stream(messages.value, config)
+      let accText = ''
+
+      for await (const chunk of stream) {
+        if (abortController.value?.signal.aborted) break
+        await processChunk(chunk, assistantMsg.id, accText)
+        if (chunk.type === 'text' && chunk.content) accText += chunk.content
+      }
+    } catch (err: unknown) {
+      updateMessage(assistantMsg.id, {
+        isError: true,
+        isStreaming: false,
+        errorMessage: err instanceof Error ? err.message : 'Generation failed',
+      })
+    } finally {
+      updateMessage(assistantMsg.id, { isStreaming: false })
+      isGenerating.value = false
+      abortController.value = null
+    }
+  }
+
+  async function processChunk(chunk: StreamChunk, msgId: string, currentText: string) {
+    const conv = activeConversation.value
+    if (!conv) return
+    const msg = conv.messages.find(m => m.id === msgId)
+    if (!msg) return
+
+    if (chunk.type === 'text' && chunk.content) {
+      msg.content = currentText + chunk.content
+    } else if (chunk.type === 'thinking' && chunk.content) {
+      if (!msg.thinking) msg.thinking = []
+      const last = msg.thinking[msg.thinking.length - 1]
+      if (last && !last.isComplete) {
+        last.content += chunk.content
+      } else {
+        msg.thinking.push({ id: crypto.randomUUID(), content: chunk.content, isComplete: false })
+      }
+    } else if (chunk.type === 'tool_call' && chunk.toolCall) {
+      if (!msg.toolCalls) msg.toolCalls = []
+      const existing = msg.toolCalls.find(t => t.id === chunk.toolCall!.id)
+      if (existing) {
+        Object.assign(existing, chunk.toolCall)
+      } else {
+        msg.toolCalls.push({
+          id: chunk.toolCall.id ?? crypto.randomUUID(),
+          name: chunk.toolCall.name ?? '',
+          arguments: chunk.toolCall.arguments ?? {},
+          status: chunk.toolCall.status ?? 'pending',
+          ...chunk.toolCall,
+        })
+      }
+    } else if (chunk.type === 'artifact' && chunk.artifact) {
+      if (!msg.artifacts) msg.artifacts = []
+      const existing = msg.artifacts.find(a => a.id === chunk.artifact!.id)
+      if (existing) {
+        existing.content = chunk.artifact.content ?? existing.content
+      } else {
+        msg.artifacts.push({
+          id: chunk.artifact.id ?? crypto.randomUUID(),
+          type: chunk.artifact.type ?? 'code',
+          title: chunk.artifact.title ?? 'Artifact',
+          content: chunk.artifact.content ?? '',
+          version: 1,
+          history: [],
+          ...chunk.artifact,
+        })
+      }
+    }
+  }
+
+  function stopGeneration() {
+    abortController.value?.abort()
+    isGenerating.value = false
+  }
+
+  async function retryMessage(messageId: string) {
+    const conv = activeConversation.value
+    if (!conv) return
+    const idx = conv.messages.findIndex(m => m.id === messageId)
+    if (idx === -1) return
+    // Remove from this message onward
+    conv.messages.splice(idx)
+    // Re-send last user message
+    const lastUser = [...conv.messages].reverse().find(m => m.role === 'user')
+    if (lastUser) await sendMessage(lastUser.content)
+  }
+
+  function exportConversation(id: string): string {
+    const conv = conversations.value.find(c => c.id === id)
+    if (!conv) return ''
+    return JSON.stringify(conv, null, 2)
+  }
+
+  return {
+    conversations,
+    activeId,
+    activeConversation,
+    messages,
+    isGenerating,
+    createConversation,
+    deleteConversation,
+    renameConversation,
+    pinConversation,
+    sendMessage,
+    addMessage,
+    updateMessage,
+    deleteMessage,
+    stopGeneration,
+    retryMessage,
+    exportConversation,
+    setActive: (id: string) => { activeId.value = id },
+  }
+}
+
+export function provideChat(config: ChatConfig, adapter: StreamAdapter | null) {
+  const state = createChatState(config, adapter)
+  provide(CHAT_KEY, state)
+  return state
+}
+
+export function useChat() {
+  const ctx = inject(CHAT_KEY)
+  if (!ctx) throw new Error('[ai-chat-vue] useChat must be used inside <ChatProvider>')
+  return ctx
+}

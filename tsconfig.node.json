@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "lib": ["ESNext"],
+    "types": ["node"]
+  },
+  "include": ["*.config.*", "play/*.config.*", "docs/.vitepress/**/*.ts"],
+  "exclude": ["node_modules", "dist", "play/dist", "docs/.vitepress/dist"]
+}

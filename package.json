@@ -1,0 +1,70 @@
+{
+  "name": "@ai-chat/vue",
+  "version": "1.0.0",
+  "description": "A powerful Vue 3 + TailwindCSS AI Chat UI component library",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./styles": "./dist/style.css"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "vite --config play/vite.config.ts",
+    "build": "vite build && vue-tsc -p tsconfig.web.json --emitDeclarationOnly",
+    "play:build": "vite build --config play/vite.config.ts",
+    "play:preview": "vite preview --config play/vite.config.ts",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "preview": "vite preview"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.33"
+  },
+  "dependencies": {
+    "dompurify": "^3.4.2",
+    "marked": "^18.0.3",
+    "mermaid": "^11.14.0",
+    "shiki": "^4.0.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@tailwindcss/postcss": "^4.2.4",
+    "@types/node": "^25.6.0",
+    "@vitejs/plugin-vue": "^6.0.6",
+    "autoprefixer": "^10.5.0",
+    "eslint": "^10.3.0",
+    "eslint-plugin-vue": "^10.9.0",
+    "globals": "^17.6.0",
+    "postcss": "^8.5.14",
+    "prettier": "^3.8.3",
+    "tailwindcss": "^4.2.4",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.2",
+    "vite": "^8.0.10",
+    "vitepress": "^1.6.4",
+    "vue": "^3.5.33",
+    "vue-eslint-parser": "^10.4.0",
+    "vue-tsc": "^3.2.8"
+  },
+  "keywords": [
+    "vue",
+    "ai",
+    "chat",
+    "tailwindcss",
+    "llm",
+    "openai",
+    "streaming"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,67 @@
+@import 'tailwindcss';
+@config "../../tailwind.config.cjs";
+
+:root {
+  --vp-c-brand-1: #0f766e;
+  --vp-c-brand-2: #115e59;
+  --vp-c-brand-3: #14b8a6;
+  --ac-primary: #0f766e;
+  --ac-bg: #ffffff;
+  --ac-surface: #f8fafc;
+  --ac-border: #d8dee4;
+  --ac-text: #1f2937;
+  --ac-muted: #6b7280;
+  --ac-user-bg: #0f766e;
+  --ac-assistant-bg: #f3f4f6;
+  --ac-hover: #eef2f7;
+  --ac-input-bg: #ffffff;
+}
+
+.dark {
+  --ac-bg: #0f172a;
+  --ac-surface: #111827;
+  --ac-border: #334155;
+  --ac-text: #e5e7eb;
+  --ac-muted: #94a3b8;
+  --ac-assistant-bg: #1f2937;
+  --ac-hover: #243244;
+  --ac-input-bg: #111827;
+}
+
+.vp-doc .demo-card {
+  margin: 20px 0;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--vp-c-bg);
+}
+
+.vp-doc .demo-card__preview {
+  padding: 20px;
+  background:
+    linear-gradient(135deg, rgba(15, 118, 110, 0.08), transparent 34%),
+    var(--vp-c-bg-soft);
+}
+
+.vp-doc .api-table {
+  display: table;
+  width: 100%;
+  font-size: 14px;
+}
+
+.vp-doc .api-table th,
+.vp-doc .api-table td {
+  white-space: normal;
+}
+
+.docs-chat-shell {
+  height: 520px;
+  border: 1px solid var(--ac-border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--ac-bg);
+}
+
+.docs-narrow {
+  max-width: 680px;
+}

@@ -1,0 +1,36 @@
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+*.tsbuildinfo
+docs/.vitepress/cache
+docs/.vitepress/dist
+
+# Node dependencies
+node_modules
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Local .env files
+.env
+.env.*
+!.env.example
+
+# VSC
+.history
+.output.zip
+pnpm-lock.yaml
+
+task_plan.md
+progress.md
+findings.md

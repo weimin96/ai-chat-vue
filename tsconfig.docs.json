@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "paths": {
+      "@/*": ["src/*"],
+      "@ai-chat/vue": ["src/index.ts"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "docs/**/*.ts",
+    "docs/**/*.vue",
+    "docs/.vitepress/**/*.ts",
+    "docs/.vitepress/**/*.mts"
+  ],
+  "exclude": ["node_modules", "dist", "play/dist", "docs/.vitepress/dist"]
+}
