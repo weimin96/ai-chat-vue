@@ -69,7 +69,7 @@ export default defineConfig({
         ],
       },
     ],
-    socialLinks: [{ icon: 'github', link: 'https://github.com' }],
+    socialLinks: [{ icon: 'github', link: 'https://github.com/weimin96/ai-chat-vue' }],
     outline: {
       label: '本页目录',
     },

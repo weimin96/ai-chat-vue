@@ -1,8 +1,6 @@
 # @weimin96/ai-chat-vue
 
 <p align="center">
-  <img src="/icon.svg" alt="@weimin96/ai-chat-vue icon" width="84">
-  <br>
   <img src="/logo.svg" alt="@weimin96/ai-chat-vue logo" width="520">
 </p>
 
@@ -22,6 +20,3 @@
 - [主题](/guide/theme)
 - [组件总览](/components/chat-provider)
 
-## 目录约定
-
-`play/` 用于开发调试，`docs/` 用于用户阅读和组件示例。文档示例通过 `@weimin96/ai-chat-vue` alias 直接引用源码导出面。
