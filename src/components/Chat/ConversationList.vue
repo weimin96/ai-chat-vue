@@ -42,7 +42,7 @@ function formatTime(ts: number) {
 
 <template>
   <div class="ac-conv-list flex flex-col h-full bg-[var(--ac-sidebar-bg,#f8f9fa)] border-r border-[var(--ac-border,#e5e7eb)]">
-    <!-- Header -->
+    <!-- 顶部操作区需要常驻，避免长列表滚动时新建入口消失。 -->
     <div class="p-3 border-b border-[var(--ac-border,#e5e7eb)]">
       <button
         @click="createConversation()"
@@ -55,7 +55,7 @@ function formatTime(ts: number) {
       </button>
     </div>
 
-    <!-- Search -->
+    <!-- 搜索入口独立于列表，便于后续扩展分组过滤。 -->
     <div class="px-3 py-2">
       <div class="relative">
         <svg class="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-[var(--ac-muted,#9ca3af)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,9 +69,9 @@ function formatTime(ts: number) {
       </div>
     </div>
 
-    <!-- List -->
+    <!-- 列表区域独立滚动，避免影响外层聊天布局高度。 -->
     <div class="flex-1 overflow-y-auto px-2 py-1 space-y-0.5">
-      <!-- Pinned -->
+      <!-- 置顶会话优先展示，保持高频会话的稳定位置。 -->
       <template v-if="pinned.length">
         <p class="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--ac-muted,#9ca3af)]">Pinned</p>
         <ConvItem
@@ -88,7 +88,7 @@ function formatTime(ts: number) {
         />
       </template>
 
-      <!-- Recent -->
+      <!-- 最近会话保留默认时间顺序，降低用户回到上下文的成本。 -->
       <template v-if="recent.length">
         <p v-if="pinned.length" class="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--ac-muted,#9ca3af)] mt-2">Recent</p>
         <ConvItem
@@ -105,7 +105,7 @@ function formatTime(ts: number) {
         />
       </template>
 
-      <!-- Empty -->
+      <!-- 空状态只在无会话时出现，避免和过滤结果状态混淆。 -->
       <div v-if="!pinned.length && !recent.length" class="flex flex-col items-center justify-center py-12 text-center">
         <div class="text-3xl mb-2">💬</div>
         <p class="text-xs text-[var(--ac-muted,#9ca3af)]">No conversations yet</p>
@@ -115,13 +115,12 @@ function formatTime(ts: number) {
 </template>
 
 <script lang="ts">
-// Inner component to avoid repetition
-import { defineComponent, h, ref } from 'vue'
+import { defineComponent, h, ref as vueRef } from 'vue'
 const ConvItem = defineComponent({
   props: ['conv', 'active', 'editingId', 'editTitle', 'formatTime'],
   emits: ['select', 'start-edit', 'commit-edit', 'update-title', 'pin', 'archive', 'delete', 'export'],
   setup(props, { emit }) {
-    const menuOpen = ref(false)
+    const menuOpen = vueRef(false)
     return () => {
       const conv = props.conv
       const isActive = props.active
@@ -144,7 +143,6 @@ const ConvItem = defineComponent({
             : h('p', { class: 'text-xs font-medium truncate' }, conv.title),
           h('p', { class: 'text-[10px] text-[var(--ac-muted,#9ca3af)] mt-0.5' }, props.formatTime(conv.updatedAt)),
         ]),
-        // Menu button
         h('div', {
           class: 'opacity-0 group-hover:opacity-100 transition-opacity',
           onClick: (e: Event) => { e.stopPropagation(); menuOpen.value = !menuOpen.value },
@@ -153,17 +151,16 @@ const ConvItem = defineComponent({
             h('path', { d: 'M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z' }),
           ]),
         ]),
-        // Dropdown
         menuOpen.value && h('div', {
           class: 'absolute right-0 top-8 z-50 w-36 bg-white rounded-lg shadow-lg border border-[var(--ac-border,#e5e7eb)] py-1 text-xs',
           onClick: (e: Event) => e.stopPropagation(),
         }, [
           ...[
-            { label: isActive ? '✏️ Rename' : '✏️ Rename', action: () => { emit('start-edit', conv); menuOpen.value = false } },
-            { label: conv.isPinned ? '📌 Unpin' : '📌 Pin', action: () => { emit('pin'); menuOpen.value = false } },
-            { label: '📦 Archive', action: () => { emit('archive'); menuOpen.value = false } },
-            { label: '📥 Export', action: () => { emit('export'); menuOpen.value = false } },
-            { label: '🗑️ Delete', action: () => { emit('delete'); menuOpen.value = false }, class: 'text-red-500' },
+            { label: 'Rename', action: () => { emit('start-edit', conv); menuOpen.value = false } },
+            { label: conv.isPinned ? 'Unpin' : 'Pin', action: () => { emit('pin'); menuOpen.value = false } },
+            { label: 'Archive', action: () => { emit('archive'); menuOpen.value = false } },
+            { label: 'Export', action: () => { emit('export'); menuOpen.value = false } },
+            { label: 'Delete', action: () => { emit('delete'); menuOpen.value = false }, class: 'text-red-500' },
           ].map(item => h('button', {
             class: `w-full text-left px-3 py-1.5 hover:bg-[var(--ac-hover,#f3f4f6)] transition-colors ${item.class ?? ''}`,
             onClick: item.action,

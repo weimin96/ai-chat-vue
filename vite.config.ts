@@ -13,7 +13,7 @@ export default defineConfig({
       formats: ['es', 'cjs'],
     },
     rollupOptions: {
-      // Externalize all peer deps
+      // 依赖由使用方项目解析，避免组件库包内重复打包运行时依赖。
       external: ['vue', 'marked', 'dompurify', 'shiki', 'mermaid'],
       output: {
         globals: {
@@ -21,7 +21,7 @@ export default defineConfig({
           marked: 'marked',
           dompurify: 'DOMPurify',
         },
-        // Preserve CSS as separate file
+        // 样式导出路径已经进入公开契约，构建时必须保持稳定文件名。
         assetFileNames: (assetInfo) => {
           if (assetInfo.name === 'style.css') return 'style.css'
           return assetInfo.name ?? 'asset'
@@ -29,8 +29,8 @@ export default defineConfig({
       },
     },
     cssCodeSplit: false,
-    sourcemap: true,
-    minify: false, // Keep readable for library dist
+    sourcemap: false,
+    minify: false,
   },
   resolve: {
     alias: { '@': resolve(__dirname, 'src') },

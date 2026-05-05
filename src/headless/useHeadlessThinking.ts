@@ -1,8 +1,4 @@
-/**
- * useHeadlessThinking
- * Collapsible reasoning panel logic. Zero styling.
- */
-import { ref, computed, readonly, type Ref } from 'vue'
+import { ref, computed, readonly, type ComputedRef, type Ref } from 'vue'
 import type { ThinkingStep } from '../types'
 
 export interface UseHeadlessThinkingOptions {
@@ -12,12 +8,12 @@ export interface UseHeadlessThinkingOptions {
 
 export interface UseHeadlessThinkingReturn {
   isExpanded: Readonly<Ref<boolean>>
-  isComplete: ReturnType<typeof computed<boolean>>
+  isComplete: ComputedRef<boolean>
   toggle: () => void
   expand: () => void
   collapse: () => void
-  fullText: ReturnType<typeof computed<string>>
-  stepCount: ReturnType<typeof computed<number>>
+  fullText: ComputedRef<string>
+  stepCount: ComputedRef<number>
   toggleAttrs: Record<string, string>
   panelAttrs: Record<string, string | boolean>
 }
@@ -62,12 +58,6 @@ export function useHeadlessThinking(options: UseHeadlessThinkingOptions): UseHea
 }
 
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * useHeadlessToolCall
- * Tool call card expand/collapse + status helpers. Zero styling.
- */
 import type { ToolCall } from '../types'
 
 export interface UseHeadlessToolCallOptions {
@@ -78,18 +68,15 @@ export interface UseHeadlessToolCallOptions {
 export interface UseHeadlessToolCallReturn {
   isExpanded: Readonly<Ref<boolean>>
   toggle: () => void
-  // Derived status helpers (use these to conditionally render icons/classes)
   isPending: boolean
   isRunning: boolean
   isSuccess: boolean
   isError: boolean
   statusLabel: string
-  // Formatted arg/result strings
   formattedArgs: string
   formattedResult: string
   formattedError: string
   durationLabel: string | null
-  // ARIA
   toggleAttrs: Record<string, string>
   panelAttrs: Record<string, string | boolean>
 }
@@ -149,13 +136,6 @@ export function useHeadlessToolCall(options: UseHeadlessToolCallOptions): UseHea
 }
 
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * useHeadlessArtifact
- * Artifact panel: tab switching, fullscreen, version history, blob URL management.
- * Zero styling.
- */
 import type { Artifact, ArtifactType } from '../types'
 
 export interface UseHeadlessArtifactOptions {
@@ -166,36 +146,31 @@ export interface UseHeadlessArtifactOptions {
 export type ArtifactTab = 'preview' | 'source'
 
 export interface UseHeadlessArtifactReturn {
-  // Tab state
   activeTab: Ref<ArtifactTab>
   setTab: (tab: ArtifactTab) => void
-  isPreview: ReturnType<typeof computed<boolean>>
-  isSource: ReturnType<typeof computed<boolean>>
+  isPreview: ComputedRef<boolean>
+  isSource: ComputedRef<boolean>
 
-  // Fullscreen
   isFullscreen: Readonly<Ref<boolean>>
   toggleFullscreen: () => void
   enterFullscreen: () => void
   exitFullscreen: () => void
 
-  // Content
-  blobUrl: ReturnType<typeof computed<string | null>>
-  language: ReturnType<typeof computed<string>>
-  typeLabel: ReturnType<typeof computed<string>>
-  canPreview: ReturnType<typeof computed<boolean>>
-  hasHistory: ReturnType<typeof computed<boolean>>
+  blobUrl: ComputedRef<string | null>
+  language: ComputedRef<string>
+  typeLabel: ComputedRef<string>
+  canPreview: ComputedRef<boolean>
+  hasHistory: ComputedRef<boolean>
 
-  // Actions
   updateContent: (content: string) => void
   restoreVersion: (version: number) => void
   copySource: () => Promise<void>
   hasCopied: Readonly<Ref<boolean>>
 
-  // ARIA
   tabListAttrs: Record<string, string>
   getTabAttrs: (tab: ArtifactTab) => Record<string, string | boolean>
   getPanelAttrs: (tab: ArtifactTab) => Record<string, string | boolean>
-  fullscreenButtonAttrs: ReturnType<typeof computed<Record<string, string>>>
+  fullscreenButtonAttrs: ComputedRef<Record<string, string>>
   iframeAttrs: Record<string, string>
 }
 
@@ -214,7 +189,6 @@ export function useHeadlessArtifact(options: UseHeadlessArtifactOptions): UseHea
   const enterFullscreen  = () => { isFullscreen.value = true }
   const exitFullscreen   = () => { isFullscreen.value = false }
 
-  // Manage blob URL lifecycle
   let _blobUrl: string | null = null
   const blobUrl = computed<string | null>(() => {
     if (artifact.type !== 'html') return null
@@ -255,7 +229,6 @@ export function useHeadlessArtifact(options: UseHeadlessArtifactOptions): UseHea
     setTimeout(() => { hasCopied.value = false }, 2000)
   }
 
-  // ARIA
   const tabListAttrs: Record<string, string> = {
     role: 'tablist',
     'aria-label': 'Artifact view tabs',
@@ -308,13 +281,6 @@ export function useHeadlessArtifact(options: UseHeadlessArtifactOptions): UseHea
 }
 
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * useHeadlessWelcome
- * Welcome screen state: prompt card selection, suggestion clicks.
- * Zero styling.
- */
 export interface PromptCard {
   icon?: string
   title: string
@@ -377,12 +343,6 @@ export function useHeadlessWelcome(options: UseHeadlessWelcomeOptions): UseHeadl
 }
 
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * useHeadlessCodeBlock
- * Code block copy, collapse, line-number, run-button state. Zero styling.
- */
 export interface UseHeadlessCodeBlockOptions {
   code: string
   language?: string
@@ -397,13 +357,12 @@ export interface UseHeadlessCodeBlockReturn {
   toggle: () => void
   copy: () => Promise<void>
   run: () => void
-  lines: ReturnType<typeof computed<string[]>>
-  lineCount: ReturnType<typeof computed<number>>
+  lines: ComputedRef<string[]>
+  lineCount: ComputedRef<number>
   language: string
   filename: string | undefined
-  // ARIA
-  toggleAttrs: ReturnType<typeof computed<Record<string, string>>>
-  copyButtonAttrs: ReturnType<typeof computed<Record<string, string>>>
+  toggleAttrs: ComputedRef<Record<string, string>>
+  copyButtonAttrs: ComputedRef<Record<string, string>>
   runButtonAttrs: Record<string, string>
   preAttrs: Record<string, string>
 }

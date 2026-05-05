@@ -1,30 +1,20 @@
-/**
- * useHeadlessConversationList
- *
- * Conversation sidebar logic: search, grouping, CRUD, keyboard nav.
- * Zero styling.
- */
-import { ref, computed, readonly } from 'vue'
+import { ref, computed, type ComputedRef, type Ref } from 'vue'
 import { useConversation } from '../composables/useConversation'
 import type { Conversation } from '../types'
 
 export interface UseHeadlessConversationListReturn {
-  // Search
-  searchQuery: ReturnType<typeof ref<string>>
-  isSearching: ReturnType<typeof computed<boolean>>
+  searchQuery: Ref<string>
+  isSearching: ComputedRef<boolean>
 
-  // Grouped lists
-  pinnedConversations: ReturnType<typeof computed<Conversation[]>>
-  recentConversations: ReturnType<typeof computed<Conversation[]>>
-  archivedConversations: ReturnType<typeof computed<Conversation[]>>
-  searchResults: ReturnType<typeof computed<Conversation[]>>
-  isEmpty: ReturnType<typeof computed<boolean>>
+  pinnedConversations: ComputedRef<Conversation[]>
+  recentConversations: ComputedRef<Conversation[]>
+  archivedConversations: ComputedRef<Conversation[]>
+  searchResults: ComputedRef<Conversation[]>
+  isEmpty: ComputedRef<boolean>
 
-  // Editing state
-  editingId: ReturnType<typeof ref<string | null>>
-  editTitle: ReturnType<typeof ref<string>>
+  editingId: Ref<string | null>
+  editTitle: Ref<string>
 
-  // Actions
   select: (id: string) => void
   create: () => void
   startRename: (conv: Conversation) => void
@@ -35,11 +25,9 @@ export interface UseHeadlessConversationListReturn {
   archive: (id: string) => void
   exportJSON: (id: string) => void
 
-  // Keyboard nav
-  focusedIndex: ReturnType<typeof ref<number>>
+  focusedIndex: Ref<number>
   handleListKeydown: (e: KeyboardEvent) => void
 
-  // ARIA
   listAttrs: Record<string, string>
   getItemAttrs: (id: string) => Record<string, string | boolean>
   searchAttrs: Record<string, string>
@@ -119,7 +107,6 @@ export function useHeadlessConversationList(): UseHeadlessConversationListReturn
     URL.revokeObjectURL(url)
   }
 
-  // Flat list for keyboard nav
   const flatList = computed(() => [
     ...pinnedConversations.value,
     ...recentConversations.value,
@@ -140,7 +127,6 @@ export function useHeadlessConversationList(): UseHeadlessConversationListReturn
     }
   }
 
-  // ARIA
   const listAttrs: Record<string, string> = {
     role: 'navigation',
     'aria-label': 'Conversation list',

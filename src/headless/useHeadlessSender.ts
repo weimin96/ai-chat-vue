@@ -1,22 +1,4 @@
-/**
- * useHeadlessSender
- *
- * All input logic: value binding, multiline resize, keyboard shortcuts,
- * character counting, file attachment, voice recording state.
- * Zero styling.
- *
- * @example
- * ```vue
- * <script setup>
- * const sender = useHeadlessSender({ onSend: chat.sendMessage, onStop: chat.stopGeneration })
- * </script>
- * <template>
- *   <textarea v-bind="sender.textareaAttrs" v-on="sender.textareaListeners" />
- *   <button v-bind="sender.sendButtonAttrs" @click="sender.submit">Send</button>
- * </template>
- * ```
- */
-import { ref, computed, readonly } from 'vue'
+import { ref, computed, readonly, type ComputedRef, type Ref } from 'vue'
 
 export interface UseHeadlessSenderOptions {
   onSend: (content: string) => void | Promise<void>
@@ -28,16 +10,14 @@ export interface UseHeadlessSenderOptions {
 }
 
 export interface UseHeadlessSenderReturn {
-  // State
-  value: ReturnType<typeof ref<string>>
-  isRecording: Readonly<ReturnType<typeof ref<boolean>>>
-  charCount: ReturnType<typeof computed<number>>
-  remainingChars: ReturnType<typeof computed<number>>
-  isOverLimit: ReturnType<typeof computed<boolean>>
-  canSubmit: ReturnType<typeof computed<boolean>>
-  isNearLimit: ReturnType<typeof computed<boolean>>
+  value: Ref<string>
+  isRecording: Readonly<Ref<boolean>>
+  charCount: ComputedRef<number>
+  remainingChars: ComputedRef<number>
+  isOverLimit: ComputedRef<boolean>
+  canSubmit: ComputedRef<boolean>
+  isNearLimit: ComputedRef<boolean>
 
-  // Actions
   submit: () => void
   clear: () => void
   insertText: (text: string) => void
@@ -45,14 +25,12 @@ export interface UseHeadlessSenderReturn {
   stopVoice: () => void
   handleFiles: (files: FileList) => void
 
-  // Event handlers (spread with v-on)
   textareaListeners: {
     input: (e: Event) => void
     keydown: (e: KeyboardEvent) => void
     paste: (e: ClipboardEvent) => void
   }
 
-  // Attr objects (spread with v-bind)
   textareaAttrs: {
     placeholder: string
     maxlength: number
@@ -81,8 +59,7 @@ export interface UseHeadlessSenderReturn {
     'aria-label': string
   }
 
-  // Internal ref for the textarea element (for focus/resize)
-  textareaRef: ReturnType<typeof ref<HTMLTextAreaElement | null>>
+  textareaRef: Ref<HTMLTextAreaElement | null>
 }
 
 export function useHeadlessSender(options: UseHeadlessSenderOptions): UseHeadlessSenderReturn {
@@ -99,7 +76,7 @@ export function useHeadlessSender(options: UseHeadlessSenderOptions): UseHeadles
   const isRecording = ref(false)
   const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
-  let recognition: SpeechRecognition | null = null
+  let recognition: AiChatSpeechRecognition | null = null
 
   const charCount = computed(() => value.value.length)
   const remainingChars = computed(() => maxLength - charCount.value)
@@ -107,7 +84,6 @@ export function useHeadlessSender(options: UseHeadlessSenderOptions): UseHeadles
   const isNearLimit = computed(() => charCount.value > maxLength * 0.8)
   const canSubmit = computed(() => value.value.trim().length > 0 && !isOverLimit.value && !isGenerating)
 
-  // Auto-resize textarea helper (consumers call this after ref is bound)
   function autoResize() {
     const el = textareaRef.value
     if (!el) return
@@ -133,7 +109,6 @@ export function useHeadlessSender(options: UseHeadlessSenderOptions): UseHeadles
       const start = el.selectionStart ?? value.value.length
       const end = el.selectionEnd ?? value.value.length
       value.value = value.value.slice(0, start) + text + value.value.slice(end)
-      // Restore cursor
       setTimeout(() => {
         el.selectionStart = el.selectionEnd = start + text.length
         autoResize()
@@ -144,8 +119,7 @@ export function useHeadlessSender(options: UseHeadlessSenderOptions): UseHeadles
   }
 
   async function startVoice() {
-    const SR = (window as unknown as Record<string, unknown>)['SpeechRecognition'] as (new() => SpeechRecognition) | undefined
-               ?? (window as unknown as Record<string, unknown>)['webkitSpeechRecognition'] as (new() => SpeechRecognition) | undefined
+    const SR = window.SpeechRecognition ?? window.webkitSpeechRecognition
     if (!SR) throw new Error('SpeechRecognition not supported')
 
     recognition = new SR()
@@ -153,7 +127,7 @@ export function useHeadlessSender(options: UseHeadlessSenderOptions): UseHeadles
     recognition.interimResults = true
     recognition.lang = 'zh-CN'
 
-    recognition.onresult = (e: SpeechRecognitionEvent) => {
+    recognition.onresult = (e: AiChatSpeechRecognitionEvent) => {
       value.value = Array.from(e.results).map(r => r[0].transcript).join('')
     }
     recognition.onend = () => { isRecording.value = false }
@@ -172,7 +146,6 @@ export function useHeadlessSender(options: UseHeadlessSenderOptions): UseHeadles
     onAttach?.(files)
   }
 
-  // Event handlers
   const textareaListeners = {
     input(e: Event) {
       value.value = (e.target as HTMLTextAreaElement).value
@@ -183,14 +156,12 @@ export function useHeadlessSender(options: UseHeadlessSenderOptions): UseHeadles
         e.preventDefault()
         submit()
       }
-      // Ctrl/Cmd+Enter also submits
       if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault()
         submit()
       }
     },
     paste(e: ClipboardEvent) {
-      // Handle image paste
       const items = Array.from(e.clipboardData?.items ?? [])
       const imageItem = items.find(i => i.type.startsWith('image/'))
       if (imageItem) {
@@ -204,7 +175,6 @@ export function useHeadlessSender(options: UseHeadlessSenderOptions): UseHeadles
     },
   }
 
-  // Attr objects
   const textareaAttrs = {
     placeholder,
     maxlength: maxLength,

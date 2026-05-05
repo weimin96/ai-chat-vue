@@ -1,0 +1,32 @@
+interface AiChatSpeechRecognitionResult {
+  readonly transcript: string
+}
+
+interface AiChatSpeechRecognitionResultList {
+  readonly length: number
+  [index: number]: AiChatSpeechRecognitionResult[]
+}
+
+interface AiChatSpeechRecognitionEvent extends Event {
+  readonly results: AiChatSpeechRecognitionResultList
+}
+
+interface AiChatSpeechRecognition extends EventTarget {
+  continuous: boolean
+  interimResults: boolean
+  lang: string
+  onresult: ((event: AiChatSpeechRecognitionEvent) => void) | null
+  onend: (() => void) | null
+  onerror: (() => void) | null
+  start: () => void
+  stop: () => void
+}
+
+interface AiChatSpeechRecognitionConstructor {
+  new(): AiChatSpeechRecognition
+}
+
+interface Window {
+  SpeechRecognition?: AiChatSpeechRecognitionConstructor
+  webkitSpeechRecognition?: AiChatSpeechRecognitionConstructor
+}

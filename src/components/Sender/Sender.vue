@@ -61,7 +61,6 @@ function handleSuggestion(s: string) {
   textareaRef.value?.focus()
 }
 
-// Voice input
 async function toggleVoice() {
   if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
     alert('Voice input not supported in this browser')
@@ -71,12 +70,15 @@ async function toggleVoice() {
     isRecording.value = false
     return
   }
-  const SpeechRecognition = (window as unknown as { SpeechRecognition: new() => SpeechRecognition; webkitSpeechRecognition: new() => SpeechRecognition }).SpeechRecognition
-    || (window as unknown as { webkitSpeechRecognition: new() => SpeechRecognition }).webkitSpeechRecognition
+  const SpeechRecognition = window.SpeechRecognition ?? window.webkitSpeechRecognition
+  if (!SpeechRecognition) {
+    alert('Voice input not supported in this browser')
+    return
+  }
   const recognition = new SpeechRecognition()
   recognition.continuous = false
   recognition.interimResults = true
-  recognition.onresult = (e: SpeechRecognitionEvent) => {
+  recognition.onresult = (e: AiChatSpeechRecognitionEvent) => {
     input.value = Array.from(e.results).map(r => r[0].transcript).join('')
   }
   recognition.onend = () => { isRecording.value = false }
@@ -87,7 +89,7 @@ async function toggleVoice() {
 
 <template>
   <div class="ac-sender flex flex-col gap-2 px-4 py-3 border-t border-[var(--ac-border,#e5e7eb)] bg-[var(--ac-surface,#ffffff)]">
-    <!-- Suggestions -->
+    <!-- 建议问题放在输入区上方，避免用户输入过程中被重新布局打断。 -->
     <div v-if="suggestions?.length" class="flex flex-wrap gap-1.5">
       <button
         v-for="s in suggestions" :key="s"
@@ -98,12 +100,12 @@ async function toggleVoice() {
       </button>
     </div>
 
-    <!-- Input row -->
+    <!-- 输入行需要保持单一容器，确保聚焦样式和边框状态一致。 -->
     <div class="flex items-end gap-2 bg-[var(--ac-input-bg,#f9fafb)] border border-[var(--ac-border,#e5e7eb)] rounded-xl px-3 py-2 focus-within:border-[var(--ac-primary,#6366f1)] transition-colors">
-      <!-- Attachment -->
+      <!-- 附件入口只在启用时渲染，避免暴露未接入的交互。 -->
       <AttachmentButton v-if="enableAttachments" @attach="files => emit('attach', files)" />
 
-      <!-- Textarea -->
+      <!-- 文本域高度由输入内容驱动，减少短消息场景的视觉噪声。 -->
       <textarea
         ref="textareaRef"
         v-model="input"
@@ -117,7 +119,7 @@ async function toggleVoice() {
         style="min-height: 24px"
       />
 
-      <!-- Character count -->
+      <!-- 字数提示接近上限才显示，降低常规输入时的干扰。 -->
       <span
         v-if="input.length > maxLength * 0.8"
         class="text-[10px] text-[var(--ac-muted,#9ca3af)] self-end pb-0.5"
@@ -125,7 +127,7 @@ async function toggleVoice() {
         {{ input.length }}/{{ maxLength }}
       </span>
 
-      <!-- Voice -->
+      <!-- 语音入口依赖浏览器能力，逻辑层会显式处理不支持场景。 -->
       <button
         v-if="enableVoice"
         @click="toggleVoice"
@@ -139,7 +141,7 @@ async function toggleVoice() {
         </svg>
       </button>
 
-      <!-- Send / Stop -->
+      <!-- 发送与停止共用位置，避免生成状态切换时按钮跳动。 -->
       <button
         @click="send"
         :class="[
@@ -151,11 +153,11 @@ async function toggleVoice() {
               : 'text-[var(--ac-muted,#d1d5db)] cursor-not-allowed',
         ]"
       >
-        <!-- Stop icon -->
+        <!-- 停止态使用实心图形，便于和发送态形成明确区分。 -->
         <svg v-if="isGenerating" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
           <rect x="6" y="6" width="12" height="12" rx="2"/>
         </svg>
-        <!-- Send icon -->
+        <!-- 发送态保持轻量图形，避免输入区视觉权重过高。 -->
         <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 0l-7 7m7-7l7 7"/>
         </svg>
