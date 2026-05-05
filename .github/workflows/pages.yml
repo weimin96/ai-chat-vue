@@ -28,7 +28,7 @@ concurrency:
 jobs:
   deploy:
     name: Deploy docs
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
