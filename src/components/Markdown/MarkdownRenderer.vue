@@ -1,16 +1,48 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
 import { renderMarkdown } from './markdown'
 
 const props = withDefaults(defineProps<{
   content: string
   isStreaming?: boolean
   allowHtml?: boolean
+  debounceMs?: number
 }>(), {
   allowHtml: false,
+  debounceMs: 50,
 })
 
-const rendered = computed(() => renderMarkdown(props.content, { allowHtml: props.allowHtml }))
+const rendered = ref('')
+
+let renderTimer: ReturnType<typeof setTimeout> | null = null
+
+function clearRenderTimer() {
+  if (!renderTimer) return
+  clearTimeout(renderTimer)
+  renderTimer = null
+}
+
+function renderNow() {
+  clearRenderTimer()
+  rendered.value = renderMarkdown(props.content, { allowHtml: props.allowHtml })
+}
+
+function scheduleRender() {
+  clearRenderTimer()
+  if (!props.isStreaming || props.debounceMs <= 0) {
+    renderNow()
+    return
+  }
+  renderTimer = setTimeout(renderNow, props.debounceMs)
+}
+
+watch(
+  () => [props.content, props.allowHtml, props.isStreaming, props.debounceMs] as const,
+  scheduleRender,
+  { immediate: true }
+)
+
+onBeforeUnmount(clearRenderTimer)
 </script>
 
 <template>
