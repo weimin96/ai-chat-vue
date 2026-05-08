@@ -67,10 +67,12 @@ const persistence = createLocalStoragePersistence({
 </ChatProvider>
 ```
 
-`ChatPersistenceAdapter` 只要求实现 `load()` 和 `save(conversations)`，可替换为 IndexedDB、远程接口或业务自己的加密存储。`useChat()` 会暴露 `isPersistenceReady` 和 `persistenceError`，用于展示加载状态和失败路径。
+`ChatPersistenceAdapter` 只要求实现 `load()` 和 `save(conversations)`，可替换为 IndexedDB、远程接口或业务自己的加密存储。需要懒加载消息时，可额外实现 `loadMessages(conversationId)`。`useChat()` 会暴露 `isPersistenceReady`、`persistenceError`、`isLoadingMessages` 和 `messageLoadError`，用于展示加载状态和失败路径。
 
 ## 注意事项
 
 未传入 `adapter` 时，用户消息可以进入会话，但不会产生助手流式回复。
 
 `useChat()` 暴露的 `addMessage`、`updateMessage`、`deleteMessage` 是同步内存操作，不提供跨异步任务的写入锁。流式回复期间，内部会持续更新当前助手消息的 `content`、`thinking`、`toolCalls` 和 `artifacts`。外部代码可以新增独立消息或更新非流式消息；若同时更新正在流式生成的同一条助手消息，需要避免覆盖 `content`，或在业务层合并后一次性写入。
+
+调用 `setActive(id)` 时，`activeConversation` 和 `messages` 会立即切换到对应会话；组件库不内置过渡动画。若持久化适配器提供 `loadMessages(id)`，`setActive(id)` 会在切换后异步加载该会话消息，并通过 `isLoadingMessages`、`messageLoadError` 暴露状态。

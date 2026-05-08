@@ -92,6 +92,7 @@ export interface StreamAdapter {
 
 export interface ChatPersistenceAdapter {
   load(): Conversation[] | Promise<Conversation[]>
+  loadMessages?(conversationId: string): Message[] | Promise<Message[]>
   save(conversations: Conversation[]): void | Promise<void>
 }
 

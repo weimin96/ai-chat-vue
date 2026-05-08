@@ -17,6 +17,8 @@ function createChatState(
   const abortController = ref<AbortController | null>(null)
   const isPersistenceReady = ref(!persistence)
   const persistenceError = ref<string | null>(null)
+  const isLoadingMessages = ref(false)
+  const messageLoadError = ref<string | null>(null)
 
   const activeConversation = computed(() =>
     conversations.value.find(c => c.id === activeId.value) ?? null
@@ -61,6 +63,26 @@ function createChatState(
       persistenceError.value = null
     } catch (err: unknown) {
       persistenceError.value = err instanceof Error ? err.message : '保存持久化数据失败'
+    }
+  }
+
+  async function setActiveConversation(id: string) {
+    activeId.value = id
+    messageLoadError.value = null
+
+    if (!persistence?.loadMessages) return
+
+    const conv = conversations.value.find(c => c.id === id)
+    if (!conv) return
+
+    isLoadingMessages.value = true
+    try {
+      conv.messages = await persistence.loadMessages(id)
+      messageLoadError.value = null
+    } catch (err: unknown) {
+      messageLoadError.value = err instanceof Error ? err.message : '加载会话消息失败'
+    } finally {
+      isLoadingMessages.value = false
     }
   }
 
@@ -246,6 +268,8 @@ function createChatState(
     isGenerating,
     isPersistenceReady,
     persistenceError,
+    isLoadingMessages,
+    messageLoadError,
     createConversation,
     deleteConversation,
     renameConversation,
@@ -258,7 +282,7 @@ function createChatState(
     retryMessage,
     exportConversation,
     persistConversations,
-    setActive: (id: string) => { activeId.value = id },
+    setActive: setActiveConversation,
   }
 }
 
