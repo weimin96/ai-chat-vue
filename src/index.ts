@@ -98,6 +98,11 @@ export {
   createCustomAdapter,
   createAISDKAdapter,
 } from './adapters/openai'
+export {
+  preloadShiki,
+  getPreloadedShikiHighlighter,
+  type ShikiPreloadOptions,
+} from './components/CodeBlock/shiki'
 
 export type {
   Message,

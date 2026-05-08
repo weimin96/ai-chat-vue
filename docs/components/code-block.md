@@ -31,3 +31,18 @@ import source from '../examples/code-block/Basic.vue?raw'
 | 事件  | 说明                       |
 | ----- | -------------------------- |
 | `run` | 点击运行按钮时返回代码内容 |
+
+## Shiki 预加载
+
+如果项目在代码块进入视口后再加载 Shiki，首次高亮可能出现明显延迟。可以在应用启动阶段调用 `preloadShiki()` 提前加载 WASM、主题和语言包：
+
+```ts
+import { preloadShiki } from '@weimin96/ai-chat-vue'
+
+void preloadShiki({
+  themes: ['github-dark'],
+  langs: ['typescript', 'vue', 'json', 'bash'],
+})
+```
+
+`preloadShiki()` 会复用首次创建的加载 Promise，重复调用不会重复下载同一批核心资源。需要读取已启动的预加载任务时，可调用 `getPreloadedShikiHighlighter()`。
