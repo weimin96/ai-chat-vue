@@ -38,3 +38,5 @@ import source from '../examples/bubble-list/Basic.vue?raw'
 当 `messages.length > virtualThreshold` 且 `virtual !== false` 时，`BubbleList` 只渲染可视区域和缓冲区内的消息。组件会测量已渲染消息高度，未测量项使用 `estimatedItemHeight` 参与滚动占位计算。消息高度差异极大的场景可以调大 `virtualBuffer`，或传入 `virtual={false}` 关闭虚拟滚动。
 
 滚动容器内置 `role="log"`、`aria-live="polite"` 和 `aria-relevant="additions"`，新消息会以非打断方式通知屏幕阅读器。Headless 场景下，`useHeadlessBubbleList().listAttrs` 提供同样的属性集合。
+
+`Bubble` 是单条消息组件，`onRetry`、`onDelete` 不需要参数；`BubbleList` 是列表组件，同一个回调会服务多条消息，因此通过 `id` 标识目标消息。需要拿到完整消息对象时，可以在回调中用 `messages.find(message => message.id === id)` 解析。

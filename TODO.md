@@ -18,7 +18,7 @@
 - [x] exportConversation 只导出 JSON。README 提到了 exportConversation，但格式只有 JSON。常见需求还有导出为 Markdown（对话记录分享）、导出为纯文本。
 - [x] Bubble 缺少 onEdit 实际效果说明 文档列出了 onEdit: (content: string) => void，但没有说明"编辑"的交互形态是什么，是内联编辑还是弹窗？用户在 AI 产品里对"编辑消息并重新发送"的期望很明确，应在文档和组件上明确这个行为是否会触发重新流式回复。
 - [x] BubbleList 的 onRetry / onDelete 参数签名与 Bubble 不对称
-- [] BubbleList 的 onRetry(id: string) 传的是 id，而 Bubble 的 onRetry 是 () => void 无参数。上层组合时需要用户自己做 id 绑定，不够一致，应统一为同一调用约定，或文档明确说明差异原因。
+- [x] BubbleList 的 onRetry(id: string) 传的是 id，而 Bubble 的 onRetry 是 () => void 无参数。上层组合时需要用户自己做 id 绑定，不够一致，应统一为同一调用约定，或文档明确说明差异原因。
 - [] BubbleList 缺少 onEdit prop
 - [] Bubble 支持 onEdit，但 BubbleList 的 API 表格里没有这个属性，意味着用 BubbleList 时无法触发编辑，功能出现了分层断层。
 - [] ConversationList 无任何公开 Props
