@@ -1,5 +1,5 @@
 - [x] ChatProvider 的 API 只写了 config: ChatConfig，完整的 ChatConfig 类型定义在文档站找不到，用户必须去看 types.ts 源码才能知道所有配置项，这对组件库来说是严重的 DX 问题。
-- [] BubbleList 没有虚拟滚动，长对话（几百条消息）会全量渲染 DOM，在低端设备上会明显卡顿。应集成 vue-virtual-scroller 或类似方案
+- [x] BubbleList 没有虚拟滚动，长对话（几百条消息）会全量渲染 DOM，在低端设备上会明显卡顿。应集成 vue-virtual-scroller 或类似方案
 - [] Markdown 渲染没有 debounce / 节流。流式输出期间每个 token 到来都触发 marked 解析，对于复杂 Markdown（大量表格、代码块）会造成帧率下降。应在流式期间以较低频率（如每 50ms）批量更新渲染，完成后再做完整解析。
 - [] mermaid 在每次消息更新时是否重新初始化没有说明. Mermaid 的初始化成本较高，流式期间如果内容包含 mermaid 代码块，重复 init 会造成性能问题。应只在内容完成后渲染 mermaid，流式期间显示原始代码。
 - [] shiki 的 WASM 没有预加载策略。第一次高亮代码块时需要加载 WASM，会有明显的白屏延迟。应支持 preload 配置，让用户在应用启动时提前加载。
