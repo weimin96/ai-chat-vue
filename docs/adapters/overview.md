@@ -80,3 +80,7 @@ const adapter = createCustomAdapter(async function* (messages, config, signal) {
 ```
 
 `signal` 需要传给 `fetch` 或其它可取消请求。中途失败时建议 yield `error` chunk，并结束当前生成。
+
+## 中断与重连
+
+组件库不会在 SSE 或网络断开后自动重连。自动重试涉及幂等性、已接收 token 合并、账单重复请求和服务端会话游标，这些信息只有业务后端最清楚。生产环境需要重连时，应在自定义适配器或后端代理层实现，并在恢复失败时 yield `error` chunk。
