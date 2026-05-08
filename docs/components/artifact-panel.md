@@ -23,9 +23,12 @@ import source from '../examples/artifact-panel/Basic.vue?raw'
 | ---------- | ---------- | ------ | ------------- |
 | `artifact` | `Artifact` | 必填   | Artifact 对象 |
 
-| 事件     | 说明           |
-| -------- | -------------- |
+| 事件 | 说明 |
+| ---- | ---- |
 | `update` | 内容更新时触发 |
+| `fullscreen-change` | 全屏状态变化时返回 `boolean` |
+| `tab-change` | 预览和源码页签切换时返回 `'preview' \| 'source'` |
+| `copy` | 点击复制按钮时返回当前内容 |
 
 ## 注意事项
 
