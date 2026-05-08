@@ -112,6 +112,7 @@ export type {
   Message,
   MessageRole,
   Conversation,
+  ConversationExportFormat,
   ChatConfig,
   StreamAdapter,
   StreamChunk,

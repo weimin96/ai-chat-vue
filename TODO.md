@@ -15,7 +15,7 @@
 - [x] 没有持久化层接口。所有 conversations 和 messages 都存在内存里，刷新即丢失。对于任何真实项目，这是第一个要解决的问题。库应提供 persistence 插件接口（如 localStorage adapter、IndexedDB adapter），让用户可插拔，而不是完全自己实现。
 - [x] activeId 切换会话时没有说明消息加载时机。文档未说明切换会话后 messages 是立即替换还是有过渡动画，对于有持久化需求的项目，消息是否支持异步加载（懒加载）也没有接口支持。
 - [x] 缺少 system prompt 配置入口 ChatConfig 里没有看到 systemPrompt 字段。实际上几乎每个 AI 应用都需要注入 system prompt，适配器层虽然可以自己拼装，但在 ChatProvider config 层面缺少这个一等公民字段会让初学者困惑。
-- [] exportConversation 只导出 JSON。README 提到了 exportConversation，但格式只有 JSON。常见需求还有导出为 Markdown（对话记录分享）、导出为纯文本。
+- [x] exportConversation 只导出 JSON。README 提到了 exportConversation，但格式只有 JSON。常见需求还有导出为 Markdown（对话记录分享）、导出为纯文本。
 - [] Bubble 缺少 onEdit 实际效果说明 文档列出了 onEdit: (content: string) => void，但没有说明"编辑"的交互形态是什么，是内联编辑还是弹窗？用户在 AI 产品里对"编辑消息并重新发送"的期望很明确，应在文档和组件上明确这个行为是否会触发重新流式回复。
 - [] BubbleList 的 onRetry / onDelete 参数签名与 Bubble 不对称
 - [] BubbleList 的 onRetry(id: string) 传的是 id，而 Bubble 的 onRetry 是 () => void 无参数。上层组合时需要用户自己做 id 绑定，不够一致，应统一为同一调用约定，或文档明确说明差异原因。

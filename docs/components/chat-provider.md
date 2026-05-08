@@ -76,3 +76,5 @@ const persistence = createLocalStoragePersistence({
 `useChat()` 暴露的 `addMessage`、`updateMessage`、`deleteMessage` 是同步内存操作，不提供跨异步任务的写入锁。流式回复期间，内部会持续更新当前助手消息的 `content`、`thinking`、`toolCalls` 和 `artifacts`。外部代码可以新增独立消息或更新非流式消息；若同时更新正在流式生成的同一条助手消息，需要避免覆盖 `content`，或在业务层合并后一次性写入。
 
 调用 `setActive(id)` 时，`activeConversation` 和 `messages` 会立即切换到对应会话；组件库不内置过渡动画。若持久化适配器提供 `loadMessages(id)`，`setActive(id)` 会在切换后异步加载该会话消息，并通过 `isLoadingMessages`、`messageLoadError` 暴露状态。
+
+`exportConversation(id, format)` 支持 `json`、`markdown` 和 `text`。未传入 `format` 时保持 JSON 输出。

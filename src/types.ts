@@ -6,6 +6,8 @@ export type MessageRole = 'user' | 'assistant' | 'system' | 'tool'
 
 export type ArtifactType = 'html' | 'vue' | 'markdown' | 'mermaid' | 'json' | 'csv' | 'code'
 
+export type ConversationExportFormat = 'json' | 'markdown' | 'text'
+
 export interface ToolCall {
   id: string
   name: string

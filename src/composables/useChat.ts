@@ -2,7 +2,15 @@
 // useChat - Core Chat Composable
 // ============================================================
 import { ref, computed, inject, provide, type InjectionKey } from 'vue'
-import type { Message, Conversation, ChatConfig, StreamAdapter, StreamChunk, ChatPersistenceAdapter } from '../types'
+import type {
+  Message,
+  Conversation,
+  ConversationExportFormat,
+  ChatConfig,
+  StreamAdapter,
+  StreamChunk,
+  ChatPersistenceAdapter,
+} from '../types'
 
 const CHAT_KEY: InjectionKey<ReturnType<typeof createChatState>> = Symbol('ai-chat')
 
@@ -252,10 +260,31 @@ function createChatState(
     await persistConversations()
   }
 
-  function exportConversation(id: string): string {
+  function exportConversation(id: string, format: ConversationExportFormat = 'json'): string {
     const conv = conversations.value.find(c => c.id === id)
     if (!conv) return ''
+    if (format === 'markdown') return formatConversationAsMarkdown(conv)
+    if (format === 'text') return formatConversationAsText(conv)
     return JSON.stringify(conv, null, 2)
+  }
+
+  function formatConversationAsMarkdown(conversation: Conversation) {
+    const lines = [`# ${conversation.title}`, '']
+
+    for (const message of conversation.messages) {
+      lines.push(`## ${message.role}`)
+      lines.push('')
+      lines.push(message.content)
+      lines.push('')
+    }
+
+    return lines.join('\n').trimEnd()
+  }
+
+  function formatConversationAsText(conversation: Conversation) {
+    return conversation.messages
+      .map(message => `${message.role}: ${message.content}`)
+      .join('\n\n')
   }
 
   void hydratePersistence()
