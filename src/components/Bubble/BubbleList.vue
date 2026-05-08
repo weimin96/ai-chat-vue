@@ -13,6 +13,7 @@ const props = defineProps<{
   estimatedItemHeight?: number
   virtualBuffer?: number
   onRetry?: (id: string) => void
+  onEdit?: (id: string, content: string) => void
   onDelete?: (id: string) => void
 }>()
 
@@ -180,6 +181,7 @@ watch(visibleMessages, async () => {
                 :message="msg"
                 :enable-markdown="enableMarkdown"
                 :on-retry="() => onRetry?.(msg.id)"
+                :on-edit="content => onEdit?.(msg.id, content)"
                 :on-delete="() => onDelete?.(msg.id)"
               />
             </div>
@@ -194,6 +196,7 @@ watch(visibleMessages, async () => {
           :message="msg"
           :enable-markdown="enableMarkdown"
           :on-retry="() => onRetry?.(msg.id)"
+          :on-edit="content => onEdit?.(msg.id, content)"
           :on-delete="() => onDelete?.(msg.id)"
         />
       </div>

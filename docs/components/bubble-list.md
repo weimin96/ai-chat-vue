@@ -29,6 +29,7 @@ import source from '../examples/bubble-list/Basic.vue?raw'
 | `estimatedItemHeight` | `number`          | `96`        | 未测量消息的估算高度 |
 | `virtualBuffer`  | `number`               | `6`         | 可视区域外的缓冲消息数量 |
 | `onRetry`        | `(id: string) => void` | `undefined` | 列表级重试消息    |
+| `onEdit`         | `(id: string, content: string) => void` | `undefined` | 列表级编辑消息 |
 | `onDelete`       | `(id: string) => void` | `undefined` | 列表级删除消息    |
 
 ## 注意事项
