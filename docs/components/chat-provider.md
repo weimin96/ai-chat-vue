@@ -28,6 +28,26 @@ import source from '../examples/chat-provider/Basic.vue?raw'
 | --------- | ----------------------------------------------- |
 | `default` | 放置 `ChatContainer` 或其他使用聊天上下文的组件 |
 
+## ChatConfig
+
+| 字段                | 类型                                               | 默认行为                       | 说明                     |
+| ------------------- | -------------------------------------------------- | ------------------------------ | ------------------------ |
+| `model`             | `string`                                           | 由适配器决定                   | 当前会话使用的模型标识   |
+| `systemPrompt`      | `string`                                           | 不注入系统提示词               | 发送给适配器的系统提示词 |
+| `maxTokens`         | `number`                                           | 适配器默认值                   | 回复最大 token 数        |
+| `temperature`       | `number`                                           | 适配器默认值                   | 采样温度                 |
+| `enableMarkdown`    | `boolean`                                          | 组件按自身配置决定             | 是否启用 Markdown 渲染   |
+| `enableArtifacts`   | `boolean`                                          | `false`                        | 是否启用 Artifact 能力   |
+| `enableThinking`    | `boolean`                                          | `false`                        | 是否展示思考过程         |
+| `enableToolCalls`   | `boolean`                                          | `false`                        | 是否展示工具调用         |
+| `enableVoice`       | `boolean`                                          | `false`                        | 是否启用语音输入         |
+| `enableAttachments` | `boolean`                                          | `false`                        | 是否启用附件入口         |
+| `locale`            | `'zh-CN' \| 'en-US'`                               | 组件内置文案                   | 本地化语言               |
+| `theme`             | `'light' \| 'dark' \| 'auto'`                      | 由样式变量决定                 | 主题模式                 |
+| `density`           | `'compact' \| 'default' \| 'comfortable'`          | 组件默认间距                   | 信息密度                 |
+
+`ChatConfig` 会原样传给 `StreamAdapter.stream(messages, config)`。组件只消费与自身相关的开关，模型、系统提示词、采样参数等由适配器决定如何映射到后端请求。
+
 ## 注意事项
 
 未传入 `adapter` 时，用户消息可以进入会话，但不会产生助手流式回复。
