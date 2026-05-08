@@ -47,7 +47,7 @@ const typeLabel: Record<string, string> = {
         <button
           v-for="tab in ['preview', 'source']" :key="tab"
           @click="activeTab = tab as 'preview' | 'source'"
-          :class="['px-2 py-1 text-[10px] rounded-md transition-colors', activeTab === tab ? 'bg-[var(--ac-primary,#6366f1)] text-white' : 'text-[var(--ac-muted,#6b7280)] hover:bg-[var(--ac-hover,#f3f4f6)]']"
+          :class="['px-2 py-1 text-[10px] rounded-md transition-colors', activeTab === tab ? 'bg-[var(--ac-primary,#4f46e5)] text-white' : 'text-[var(--ac-muted,#6b7280)] hover:bg-[var(--ac-hover,#f3f4f6)]']"
         >
           {{ tab === 'preview' ? '👁 Preview' : '&lt;/&gt; Source' }}
         </button>
@@ -105,7 +105,7 @@ const typeLabel: Record<string, string> = {
         <span class="text-[10px] text-[var(--ac-muted,#9ca3af)] flex-shrink-0">History:</span>
         <button
           v-for="snap in artifact.history" :key="snap.version"
-          class="flex-shrink-0 px-2 py-0.5 text-[10px] rounded border border-[var(--ac-border,#e5e7eb)] hover:border-[var(--ac-primary,#6366f1)] text-[var(--ac-muted,#6b7280)] transition-colors"
+          class="flex-shrink-0 px-2 py-0.5 text-[10px] rounded border border-[var(--ac-border,#e5e7eb)] hover:border-[var(--ac-primary,#4f46e5)] text-[var(--ac-muted,#6b7280)] transition-colors"
         >
           v{{ snap.version }}
         </button>

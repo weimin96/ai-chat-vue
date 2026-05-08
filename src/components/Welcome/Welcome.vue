@@ -27,7 +27,7 @@ const _emit = defineEmits<{ select: [prompt: string] }>()
     <div v-if="capabilities?.length" class="grid grid-cols-2 gap-3 max-w-lg w-full mb-8">
       <div
         v-for="cap in capabilities" :key="cap.title"
-        class="p-3 bg-[var(--ac-surface,#f9fafb)] border border-[var(--ac-border,#e5e7eb)] rounded-xl text-left hover:border-[var(--ac-primary,#6366f1)] transition-colors cursor-pointer"
+        class="p-3 bg-[var(--ac-surface,#f9fafb)] border border-[var(--ac-border,#e5e7eb)] rounded-xl text-left hover:border-[var(--ac-primary,#4f46e5)] transition-colors cursor-pointer"
       >
         <div class="text-lg mb-1">{{ cap.icon }}</div>
         <p class="text-xs font-semibold text-[var(--ac-text,#1f2937)]">{{ cap.title }}</p>

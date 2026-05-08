@@ -45,7 +45,7 @@ function formatTime(ts: number) {
     <div class="p-3 border-b border-[var(--ac-border,#e5e7eb)]">
       <button
         @click="createConversation()"
-        class="w-full flex items-center gap-2 px-3 py-2 bg-[var(--ac-primary,#6366f1)] text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+        class="w-full flex items-center gap-2 px-3 py-2 bg-[var(--ac-primary,#4f46e5)] text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -63,7 +63,7 @@ function formatTime(ts: number) {
         <input
           v-model="searchQuery"
           placeholder="Search..."
-          class="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-[var(--ac-border,#e5e7eb)] rounded-md outline-none focus:border-[var(--ac-primary,#6366f1)] transition-colors"
+          class="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-[var(--ac-border,#e5e7eb)] rounded-md outline-none focus:border-[var(--ac-primary,#4f46e5)] transition-colors"
         />
       </div>
     </div>
@@ -125,7 +125,7 @@ const ConvItem = defineComponent({
       const isActive = props.active
       const isEditing = props.editingId === conv.id
       return h('div', {
-        class: `group relative flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer text-sm transition-colors ${isActive ? 'bg-[var(--ac-primary-light,#eef2ff)] text-[var(--ac-primary,#6366f1)]' : 'hover:bg-white text-[var(--ac-text,#374151)]'}`,
+        class: `group relative flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer text-sm transition-colors ${isActive ? 'bg-[var(--ac-primary-light,#eef2ff)] text-[var(--ac-primary,#4f46e5)]' : 'hover:bg-white text-[var(--ac-text,#374151)]'}`,
         onClick: () => emit('select'),
       }, [
         h('div', { class: 'flex-1 min-w-0' }, [
@@ -136,7 +136,7 @@ const ConvItem = defineComponent({
                 onBlur: () => emit('commit-edit'),
                 onKeydown: (e: KeyboardEvent) => { if (e.key === 'Enter') emit('commit-edit') },
                 onClick: (e: Event) => e.stopPropagation(),
-                class: 'w-full text-xs bg-white border border-[var(--ac-primary,#6366f1)] rounded px-1 py-0.5 outline-none',
+                class: 'w-full text-xs bg-white border border-[var(--ac-primary,#4f46e5)] rounded px-1 py-0.5 outline-none',
                 autofocus: true,
               })
             : h('p', { class: 'text-xs font-medium truncate' }, conv.title),

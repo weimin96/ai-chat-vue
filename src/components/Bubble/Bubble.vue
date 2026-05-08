@@ -50,7 +50,7 @@ const isAssistant = computed(() => props.message.role === 'assistant')
         :class="[
           'ac-bubble-content rounded-2xl px-4 py-3 text-sm leading-relaxed',
           isUser
-            ? 'bg-[var(--ac-user-bg,#6366f1)] text-white rounded-tr-sm'
+            ? 'bg-[var(--ac-user-bg,#4f46e5)] text-white rounded-tr-sm'
             : 'bg-[var(--ac-assistant-bg,#f3f4f6)] text-[var(--ac-text,#1f2937)] rounded-tl-sm',
           message.isError && 'border border-red-300 bg-red-50 text-red-700',
         ]"

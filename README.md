@@ -116,7 +116,7 @@ const adapter = createCustomAdapter(async function* (messages, config, signal) {
 
 ```css
 :root {
-  --ac-primary: #6366f1;
+  --ac-primary: #4f46e5;
   --ac-primary-light: #eef2ff;
   --ac-bg: #ffffff;
   --ac-surface: #f9fafb;
@@ -124,7 +124,7 @@ const adapter = createCustomAdapter(async function* (messages, config, signal) {
   --ac-border: #e5e7eb;
   --ac-text: #111827;
   --ac-muted: #6b7280;
-  --ac-user-bg: #6366f1;
+  --ac-user-bg: #4f46e5;
   --ac-assistant-bg: #f3f4f6;
   --ac-hover: #f3f4f6;
   --ac-input-bg: #f9fafb;

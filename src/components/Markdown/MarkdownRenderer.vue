@@ -59,11 +59,11 @@ onBeforeUnmount(clearRenderTimer)
 .ac-markdown .ac-h3 { font-size: 1rem; font-weight: 600; margin: 0.75rem 0 0.25rem; }
 .ac-markdown .ac-ul { list-style: disc; padding-left: 1.25rem; margin: 0.375rem 0; }
 .ac-markdown .ac-li { margin: 0.125rem 0; }
-.ac-markdown .ac-blockquote { border-left: 3px solid var(--ac-primary, #6366f1); padding-left: 0.75rem; color: var(--ac-muted, #6b7280); margin: 0.5rem 0; font-style: italic; }
-.ac-markdown .ac-link { color: var(--ac-primary, #6366f1); text-decoration: underline; text-underline-offset: 2px; }
+.ac-markdown .ac-blockquote { border-left: 3px solid var(--ac-primary, #4f46e5); padding-left: 0.75rem; color: var(--ac-muted, #6b7280); margin: 0.5rem 0; font-style: italic; }
+.ac-markdown .ac-link { color: var(--ac-primary, #4f46e5); text-decoration: underline; text-underline-offset: 2px; }
 .ac-markdown .ac-link:hover { opacity: 0.8; }
 .ac-markdown .ac-hr { border: none; border-top: 1px solid var(--ac-border, #e5e7eb); margin: 0.75rem 0; }
-.ac-markdown .ac-inline-code { background: rgba(99,102,241,0.08); color: #6366f1; padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.875em; font-family: 'Fira Code', 'Cascadia Code', monospace; }
+.ac-markdown .ac-inline-code { background: rgba(79,70,229,0.08); color: #4f46e5; padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.875em; font-family: 'Fira Code', 'Cascadia Code', monospace; }
 .ac-markdown pre { background: #1e1e2e; color: #cdd6f4; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin: 0.5rem 0; font-size: 0.8rem; font-family: 'Fira Code', monospace; line-height: 1.6; }
 .ac-markdown pre code { background: none; color: inherit; padding: 0; }
 .ac-markdown strong { font-weight: 600; }

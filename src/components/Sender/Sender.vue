@@ -96,14 +96,14 @@ async function toggleVoice() {
       <button
         v-for="s in suggestions" :key="s"
         @click="handleSuggestion(s)"
-        class="px-2.5 py-1 text-xs border border-[var(--ac-border,#e5e7eb)] rounded-full hover:border-[var(--ac-primary,#6366f1)] hover:text-[var(--ac-primary,#6366f1)] transition-colors text-[var(--ac-muted,#6b7280)]"
+        class="px-2.5 py-1 text-xs border border-[var(--ac-border,#e5e7eb)] rounded-full hover:border-[var(--ac-primary,#4f46e5)] hover:text-[var(--ac-primary,#4f46e5)] transition-colors text-[var(--ac-muted,#6b7280)]"
       >
         {{ s }}
       </button>
     </div>
 
     <!-- 输入行需要保持单一容器，确保聚焦样式和边框状态一致。 -->
-    <div class="flex items-end gap-2 bg-[var(--ac-input-bg,#f9fafb)] border border-[var(--ac-border,#e5e7eb)] rounded-xl px-3 py-2 focus-within:border-[var(--ac-primary,#6366f1)] transition-colors">
+    <div class="flex items-end gap-2 bg-[var(--ac-input-bg,#f9fafb)] border border-[var(--ac-border,#e5e7eb)] rounded-xl px-3 py-2 focus-within:border-[var(--ac-primary,#4f46e5)] transition-colors">
       <!-- 附件入口只在启用时渲染，避免暴露未接入的交互。 -->
       <AttachmentButton v-if="enableAttachments" @attach="files => emit('attach', files)" />
 
@@ -134,7 +134,7 @@ async function toggleVoice() {
       <button
         v-if="enableVoice"
         @click="toggleVoice"
-        :class="['p-1.5 rounded-lg transition-colors self-end', isRecording ? 'text-red-500 bg-red-50' : 'text-[var(--ac-muted,#9ca3af)] hover:text-[var(--ac-primary,#6366f1)]']"
+        :class="['p-1.5 rounded-lg transition-colors self-end', isRecording ? 'text-red-500 bg-red-50' : 'text-[var(--ac-muted,#9ca3af)] hover:text-[var(--ac-primary,#4f46e5)]']"
         :title="isRecording ? 'Stop recording' : 'Voice input'"
       >
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -152,7 +152,7 @@ async function toggleVoice() {
           isGenerating
             ? 'bg-red-100 text-red-500 hover:bg-red-200'
             : canSend
-              ? 'bg-[var(--ac-primary,#6366f1)] text-white hover:opacity-90 shadow-sm'
+              ? 'bg-[var(--ac-primary,#4f46e5)] text-white hover:opacity-90 shadow-sm'
               : 'text-[var(--ac-muted,#d1d5db)] cursor-not-allowed',
         ]"
       >
