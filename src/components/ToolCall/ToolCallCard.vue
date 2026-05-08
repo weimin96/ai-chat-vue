@@ -23,7 +23,7 @@ function formatArg(val: unknown): string {
   <div :class="`ac-tool-call rounded-lg border ${statusConfig.border} ${statusConfig.bg} overflow-hidden my-1`">
     <button
       @click="expanded = !expanded"
-      :aria-expanded="String(expanded)"
+      :aria-expanded="expanded"
       :aria-controls="`tool-call-panel-${toolCall.id}`"
       class="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium"
     >
