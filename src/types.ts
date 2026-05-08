@@ -90,6 +90,11 @@ export interface StreamAdapter {
   abort?(): void
 }
 
+export interface ChatPersistenceAdapter {
+  load(): Conversation[] | Promise<Conversation[]>
+  save(conversations: Conversation[]): void | Promise<void>
+}
+
 export interface StreamChunk {
   type: 'text' | 'thinking' | 'tool_call' | 'tool_result' | 'artifact' | 'error' | 'done'
   content?: string

@@ -2,15 +2,21 @@
 // useChat - Core Chat Composable
 // ============================================================
 import { ref, computed, inject, provide, type InjectionKey } from 'vue'
-import type { Message, Conversation, ChatConfig, StreamAdapter, StreamChunk } from '../types'
+import type { Message, Conversation, ChatConfig, StreamAdapter, StreamChunk, ChatPersistenceAdapter } from '../types'
 
 const CHAT_KEY: InjectionKey<ReturnType<typeof createChatState>> = Symbol('ai-chat')
 
-function createChatState(config: ChatConfig, adapter: StreamAdapter | null) {
+function createChatState(
+  config: ChatConfig,
+  adapter: StreamAdapter | null,
+  persistence: ChatPersistenceAdapter | null
+) {
   const conversations = ref<Conversation[]>([])
   const activeId = ref<string | null>(null)
   const isGenerating = ref(false)
   const abortController = ref<AbortController | null>(null)
+  const isPersistenceReady = ref(!persistence)
+  const persistenceError = ref<string | null>(null)
 
   const activeConversation = computed(() =>
     conversations.value.find(c => c.id === activeId.value) ?? null
@@ -28,7 +34,34 @@ function createChatState(config: ChatConfig, adapter: StreamAdapter | null) {
     }
     conversations.value.unshift(conv)
     activeId.value = conv.id
+    void persistConversations()
     return conv
+  }
+
+  async function hydratePersistence() {
+    if (!persistence) return
+
+    try {
+      const loadedConversations = await persistence.load()
+      conversations.value = loadedConversations
+      activeId.value = loadedConversations[0]?.id ?? null
+      persistenceError.value = null
+    } catch (err: unknown) {
+      persistenceError.value = err instanceof Error ? err.message : '读取持久化数据失败'
+    } finally {
+      isPersistenceReady.value = true
+    }
+  }
+
+  async function persistConversations() {
+    if (!persistence || !isPersistenceReady.value) return
+
+    try {
+      await persistence.save(conversations.value)
+      persistenceError.value = null
+    } catch (err: unknown) {
+      persistenceError.value = err instanceof Error ? err.message : '保存持久化数据失败'
+    }
   }
 
   function deleteConversation(id: string) {
@@ -37,16 +70,19 @@ function createChatState(config: ChatConfig, adapter: StreamAdapter | null) {
     if (activeId.value === id) {
       activeId.value = conversations.value[0]?.id ?? null
     }
+    void persistConversations()
   }
 
   function renameConversation(id: string, title: string) {
     const conv = conversations.value.find(c => c.id === id)
     if (conv) conv.title = title
+    void persistConversations()
   }
 
   function pinConversation(id: string, pinned: boolean) {
     const conv = conversations.value.find(c => c.id === id)
     if (conv) conv.isPinned = pinned
+    void persistConversations()
   }
 
   function addMessage(msg: Omit<Message, 'id' | 'timestamp'>): Message {
@@ -59,6 +95,7 @@ function createChatState(config: ChatConfig, adapter: StreamAdapter | null) {
     if (conv.title === 'New Conversation' && msg.role === 'user') {
       conv.title = msg.content.slice(0, 40) + (msg.content.length > 40 ? '...' : '')
     }
+    void persistConversations()
     return message
   }
 
@@ -67,6 +104,7 @@ function createChatState(config: ChatConfig, adapter: StreamAdapter | null) {
     if (!conv) return
     const msg = conv.messages.find(m => m.id === id)
     if (msg) Object.assign(msg, updates)
+    void persistConversations()
   }
 
   function deleteMessage(id: string) {
@@ -74,6 +112,7 @@ function createChatState(config: ChatConfig, adapter: StreamAdapter | null) {
     if (!conv) return
     const idx = conv.messages.findIndex(m => m.id === id)
     if (idx !== -1) conv.messages.splice(idx, 1)
+    void persistConversations()
   }
 
   async function sendMessage(content: string) {
@@ -119,6 +158,7 @@ function createChatState(config: ChatConfig, adapter: StreamAdapter | null) {
       updateMessage(assistantMsg.id, { isStreaming: false })
       isGenerating.value = false
       abortController.value = null
+      void persistConversations()
     }
   }
 
@@ -174,6 +214,7 @@ function createChatState(config: ChatConfig, adapter: StreamAdapter | null) {
   function stopGeneration() {
     abortController.value?.abort()
     isGenerating.value = false
+    void persistConversations()
   }
 
   async function retryMessage(messageId: string) {
@@ -186,6 +227,7 @@ function createChatState(config: ChatConfig, adapter: StreamAdapter | null) {
     // Re-send last user message
     const lastUser = [...conv.messages].reverse().find(m => m.role === 'user')
     if (lastUser) await sendMessage(lastUser.content)
+    await persistConversations()
   }
 
   function exportConversation(id: string): string {
@@ -194,12 +236,16 @@ function createChatState(config: ChatConfig, adapter: StreamAdapter | null) {
     return JSON.stringify(conv, null, 2)
   }
 
+  void hydratePersistence()
+
   return {
     conversations,
     activeId,
     activeConversation,
     messages,
     isGenerating,
+    isPersistenceReady,
+    persistenceError,
     createConversation,
     deleteConversation,
     renameConversation,
@@ -211,12 +257,17 @@ function createChatState(config: ChatConfig, adapter: StreamAdapter | null) {
     stopGeneration,
     retryMessage,
     exportConversation,
+    persistConversations,
     setActive: (id: string) => { activeId.value = id },
   }
 }
 
-export function provideChat(config: ChatConfig, adapter: StreamAdapter | null) {
-  const state = createChatState(config, adapter)
+export function provideChat(
+  config: ChatConfig,
+  adapter: StreamAdapter | null,
+  persistence: ChatPersistenceAdapter | null = null
+) {
+  const state = createChatState(config, adapter, persistence)
   provide(CHAT_KEY, state)
   return state
 }

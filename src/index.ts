@@ -103,6 +103,10 @@ export {
   getPreloadedShikiHighlighter,
   type ShikiPreloadOptions,
 } from './components/CodeBlock/shiki'
+export {
+  createLocalStoragePersistence,
+  type LocalStoragePersistenceOptions,
+} from './persistence'
 
 export type {
   Message,
@@ -111,6 +115,7 @@ export type {
   ChatConfig,
   StreamAdapter,
   StreamChunk,
+  ChatPersistenceAdapter,
   ToolCall,
   Artifact,
   ArtifactType,

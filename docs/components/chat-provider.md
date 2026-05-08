@@ -19,10 +19,11 @@ import source from '../examples/chat-provider/Basic.vue?raw'
 
 ## API
 
-| 属性      | 类型                    | 默认值 | 说明                           |
-| --------- | ----------------------- | ------ | ------------------------------ |
-| `config`  | `ChatConfig`            | `{}`   | 会话模型、主题、功能开关等配置 |
-| `adapter` | `StreamAdapter \| null` | `null` | 流式回复适配器                 |
+| 属性          | 类型                              | 默认值 | 说明                           |
+| ------------- | --------------------------------- | ------ | ------------------------------ |
+| `config`      | `ChatConfig`                      | `{}`   | 会话模型、主题、功能开关等配置 |
+| `adapter`     | `StreamAdapter \| null`           | `null` | 流式回复适配器                 |
+| `persistence` | `ChatPersistenceAdapter \| null`  | `null` | 会话持久化适配器               |
 
 | 插槽      | 说明                                            |
 | --------- | ----------------------------------------------- |
@@ -47,6 +48,26 @@ import source from '../examples/chat-provider/Basic.vue?raw'
 | `density`           | `'compact' \| 'default' \| 'comfortable'`          | 组件默认间距                   | 信息密度                 |
 
 `ChatConfig` 会原样传给 `StreamAdapter.stream(messages, config)`。组件只消费与自身相关的开关，模型、系统提示词、采样参数等由适配器决定如何映射到后端请求。
+
+## 持久化
+
+`ChatProvider` 默认只使用内存状态。需要刷新后保留会话时，可以传入持久化适配器：
+
+```ts
+import { createLocalStoragePersistence } from '@weimin96/ai-chat-vue'
+
+const persistence = createLocalStoragePersistence({
+  key: 'demo:conversations',
+})
+```
+
+```vue
+<ChatProvider :adapter="adapter" :persistence="persistence">
+  <ChatContainer />
+</ChatProvider>
+```
+
+`ChatPersistenceAdapter` 只要求实现 `load()` 和 `save(conversations)`，可替换为 IndexedDB、远程接口或业务自己的加密存储。`useChat()` 会暴露 `isPersistenceReady` 和 `persistenceError`，用于展示加载状态和失败路径。
 
 ## 注意事项
 

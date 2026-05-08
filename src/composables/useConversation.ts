@@ -30,6 +30,7 @@ export function useConversation() {
   function archive(id: string) {
     const conv = chat.conversations.value.find(c => c.id === id)
     if (conv) conv.isArchived = !conv.isArchived
+    void chat.persistConversations()
   }
 
   return {
