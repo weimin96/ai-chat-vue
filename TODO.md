@@ -9,7 +9,7 @@
 - [x] 颜色对比度没有验证说明。CSS 变量系统很灵活，但默认主题的对比度是否符合 WCAG AA 标准没有任何说明，对于企业级场景这是硬门槛。
 - [x] StreamChunk 类型的 done 之外缺少错误 chunk 类型。createCustomAdapter 示例里 yield { type: 'text' } 和 { type: 'done' }，但没有 { type: 'error', error: Error } chunk。错误只能靠 generator 抛出异常，而 generator 抛异常的捕获方式对初学者不友好，也不利于流式中途错误恢复。
 - [x] 适配器的 AbortSignal 使用没有文档说明。createCustomAdapter(async function* (messages, config, signal)) 里 signal 参数应该怎么与 fetch 集成？文档没有任何示例，新手无法正确实现停止生成。
-- [] Vercel AI SDK adapter 列在 README 里但文档站不存在对应页面。导航栏里没有 Adapters 分类，三个适配器（OpenAI、Ollama、Vercel AI SDK）的 API 文档完全缺失，用户无法知道每个 adapter 支持哪些配置项。
+- [x] Vercel AI SDK adapter 列在 README 里但文档站不存在对应页面。导航栏里没有 Adapters 分类，三个适配器（OpenAI、Ollama、Vercel AI SDK）的 API 文档完全缺失，用户无法知道每个 adapter 支持哪些配置项。
 - [] 流式回复中断后没有说明是否有重连机制。网络抖动导致 SSE 断开时，库是否会自动重试？还是完全交给用户？对于生产可用的组件库这个行为必须明确。
 - [] useChat() 暴露的 addMessage / updateMessage 是否线程安全不明确。流式回复期间如果外部也调用 updateMessage，可能产生竞争覆盖。应在文档或类型注释中说明流式期间哪些操作是安全的。
 - [] 没有持久化层接口。所有 conversations 和 messages 都存在内存里，刷新即丢失。对于任何真实项目，这是第一个要解决的问题。库应提供 persistence 插件接口（如 localStorage adapter、IndexedDB adapter），让用户可插拔，而不是完全自己实现。

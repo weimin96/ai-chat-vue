@@ -27,6 +27,10 @@ export default defineConfig({
         ],
       },
       {
+        text: 'Adapters 适配器',
+        items: [{ text: '适配器总览', link: '/adapters/overview' }],
+      },
+      {
         text: '组件',
         items: [{ text: 'Overview 组件总览', link: '/components/overview' }],
       },
