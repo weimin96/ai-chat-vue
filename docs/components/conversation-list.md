@@ -33,6 +33,11 @@ import source from '../examples/conversation-list/Basic.vue?raw'
 | 选择会话 | 调用 `setActive(id)`                  |
 | 导出会话 | 生成 JSON 文件                        |
 
+| 插槽 | 参数 | 说明 |
+| ---- | ---- | ---- |
+| `item` | `{ conversation, active, editing, select }` | 自定义会话条目内容 |
+| `actions` | `{ conversation, close }` | 自定义会话操作菜单 |
+
 ## 注意事项
 
 `ConversationList` 适合侧栏布局，需要外层提供明确高度。

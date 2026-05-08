@@ -22,7 +22,7 @@
 - [x] BubbleList 缺少 onEdit prop
 - [x] Bubble 支持 onEdit，但 BubbleList 的 API 表格里没有这个属性，意味着用 BubbleList 时无法触发编辑，功能出现了分层断层。
 - [x] ConversationList 无任何公开 Props
-- [] 完全依赖 context 意味着无法注入自定义 slot（如自定义会话标题渲染、自定义操作菜单项）。对于稍微定制化的场景，用户只能放弃 ConversationList 整体重写，组件封装层级过死。至少应暴露 item 或 actions slot。
+- [x] 完全依赖 context 意味着无法注入自定义 slot（如自定义会话标题渲染、自定义操作菜单项）。对于稍微定制化的场景，用户只能放弃 ConversationList 整体重写，组件封装层级过死。至少应暴露 item 或 actions slot。
 - [] Sender 缺少 v-model 支持。输入框只暴露了 @send 事件，没有 v-model:value 双向绑定。外部无法在不发送的情况下读取或预设输入框内容，比如"点击建议项填入但不发送"这种场景就难以实现。
 - [] ChatContainer 的 enableMarkdown 和 ChatProvider 的 config.enableMarkdown 存在重复控制。两层都可以配置同一项功能，且文档没有说明优先级，用户会困惑哪个生效。
 - [] ArtifactPanel 仅支持 update 一个事件没有 fullscreen-change、tab-change、copy 等事件，外部无法感知面板状态变化做数据埋点或联动。

@@ -94,7 +94,14 @@ function formatTime(ts: number) {
           @delete="deleteConversation(conv.id)"
           @export="handleExport(conv.id)"
           :format-time="formatTime"
-        />
+        >
+          <template #item="slotProps">
+            <slot name="item" v-bind="slotProps" />
+          </template>
+          <template #actions="slotProps">
+            <slot name="actions" v-bind="slotProps" />
+          </template>
+        </ConvItem>
       </template>
 
       <!-- 最近会话保留默认时间顺序，降低用户回到上下文的成本。 -->
@@ -111,7 +118,14 @@ function formatTime(ts: number) {
           @delete="deleteConversation(conv.id)"
           @export="handleExport(conv.id)"
           :format-time="formatTime"
-        />
+        >
+          <template #item="slotProps">
+            <slot name="item" v-bind="slotProps" />
+          </template>
+          <template #actions="slotProps">
+            <slot name="actions" v-bind="slotProps" />
+          </template>
+        </ConvItem>
       </template>
 
       <!-- 空状态只在无会话时出现，避免和过滤结果状态混淆。 -->
@@ -128,30 +142,44 @@ import { defineComponent, h, ref as vueRef } from 'vue'
 const ConvItem = defineComponent({
   props: ['conv', 'active', 'editingId', 'editTitle', 'formatTime'],
   emits: ['select', 'start-edit', 'commit-edit', 'update-title', 'pin', 'archive', 'delete', 'export'],
-  setup(props, { emit }) {
+  setup(props, { emit, slots }) {
     const menuOpen = vueRef(false)
     return () => {
       const conv = props.conv
       const isActive = props.active
       const isEditing = props.editingId === conv.id
+      const defaultItem = [
+        isEditing
+          ? h('input', {
+              value: props.editTitle,
+              onInput: (e: Event) => emit('update-title', (e.target as HTMLInputElement).value),
+              onBlur: () => emit('commit-edit'),
+              onKeydown: (e: KeyboardEvent) => { if (e.key === 'Enter') emit('commit-edit') },
+              onClick: (e: Event) => e.stopPropagation(),
+              class: 'w-full text-xs bg-white border border-[var(--ac-primary,#4f46e5)] rounded px-1 py-0.5 outline-none',
+              autofocus: true,
+            })
+          : h('p', { class: 'text-xs font-medium truncate' }, conv.title),
+        h('p', { class: 'text-[10px] text-[var(--ac-muted,#9ca3af)] mt-0.5' }, props.formatTime(conv.updatedAt)),
+      ]
+      const defaultActions = [
+        { label: 'Rename', action: () => { emit('start-edit', conv); menuOpen.value = false } },
+        { label: conv.isPinned ? 'Unpin' : 'Pin', action: () => { emit('pin'); menuOpen.value = false } },
+        { label: 'Archive', action: () => { emit('archive'); menuOpen.value = false } },
+        { label: 'Export', action: () => { emit('export'); menuOpen.value = false } },
+        { label: 'Delete', action: () => { emit('delete'); menuOpen.value = false }, class: 'text-red-500' },
+      ].map(item => h('button', {
+        class: `w-full text-left px-3 py-1.5 hover:bg-[var(--ac-hover,#f3f4f6)] transition-colors ${item.class ?? ''}`,
+        onClick: item.action,
+      }, item.label))
+
       return h('div', {
         class: `group relative flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer text-sm transition-colors ${isActive ? 'bg-[var(--ac-primary-light,#eef2ff)] text-[var(--ac-primary,#4f46e5)]' : 'hover:bg-white text-[var(--ac-text,#374151)]'}`,
         onClick: () => emit('select'),
       }, [
-        h('div', { class: 'flex-1 min-w-0' }, [
-          isEditing
-            ? h('input', {
-                value: props.editTitle,
-                onInput: (e: Event) => emit('update-title', (e.target as HTMLInputElement).value),
-                onBlur: () => emit('commit-edit'),
-                onKeydown: (e: KeyboardEvent) => { if (e.key === 'Enter') emit('commit-edit') },
-                onClick: (e: Event) => e.stopPropagation(),
-                class: 'w-full text-xs bg-white border border-[var(--ac-primary,#4f46e5)] rounded px-1 py-0.5 outline-none',
-                autofocus: true,
-              })
-            : h('p', { class: 'text-xs font-medium truncate' }, conv.title),
-          h('p', { class: 'text-[10px] text-[var(--ac-muted,#9ca3af)] mt-0.5' }, props.formatTime(conv.updatedAt)),
-        ]),
+        h('div', { class: 'flex-1 min-w-0' }, slots.item
+          ? slots.item({ conversation: conv, active: isActive, editing: isEditing, select: () => emit('select') })
+          : defaultItem),
         h('div', {
           class: 'opacity-0 group-hover:opacity-100 transition-opacity',
           onClick: (e: Event) => { e.stopPropagation(); menuOpen.value = !menuOpen.value },
@@ -163,18 +191,9 @@ const ConvItem = defineComponent({
         menuOpen.value && h('div', {
           class: 'absolute right-0 top-8 z-50 w-36 bg-white rounded-lg shadow-lg border border-[var(--ac-border,#e5e7eb)] py-1 text-xs',
           onClick: (e: Event) => e.stopPropagation(),
-        }, [
-          ...[
-            { label: 'Rename', action: () => { emit('start-edit', conv); menuOpen.value = false } },
-            { label: conv.isPinned ? 'Unpin' : 'Pin', action: () => { emit('pin'); menuOpen.value = false } },
-            { label: 'Archive', action: () => { emit('archive'); menuOpen.value = false } },
-            { label: 'Export', action: () => { emit('export'); menuOpen.value = false } },
-            { label: 'Delete', action: () => { emit('delete'); menuOpen.value = false }, class: 'text-red-500' },
-          ].map(item => h('button', {
-            class: `w-full text-left px-3 py-1.5 hover:bg-[var(--ac-hover,#f3f4f6)] transition-colors ${item.class ?? ''}`,
-            onClick: item.action,
-          }, item.label)),
-        ]),
+        }, slots.actions
+          ? slots.actions({ conversation: conv, close: () => { menuOpen.value = false } })
+          : defaultActions),
       ])
     }
   },
