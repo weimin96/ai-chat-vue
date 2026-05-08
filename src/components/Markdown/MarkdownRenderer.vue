@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent } from 'vue'
+import { computed } from 'vue'
+import { renderMarkdown } from './markdown'
 
 const props = withDefaults(defineProps<{
   content: string
@@ -9,51 +10,7 @@ const props = withDefaults(defineProps<{
   allowHtml: false,
 })
 
-// Inline markdown parser (lightweight, no external dep needed for basic GFM)
-function parseMarkdown(text: string): string {
-  let html = text
-    // Escape HTML (unless allowed)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    // Code blocks (``` ... ```)
-    .replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) =>
-      `<pre data-lang="${lang}"><code class="language-${lang || 'text'}">${code.trim()}</code></pre>`
-    )
-    // Inline code
-    .replace(/`([^`]+)`/g, '<code class="ac-inline-code">$1</code>')
-    // Bold
-    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-    // Italic
-    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-    // Strikethrough
-    .replace(/~~([^~]+)~~/g, '<del>$1</del>')
-    // Headers
-    .replace(/^### (.+)$/gm, '<h3 class="ac-h3">$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2 class="ac-h2">$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1 class="ac-h1">$1</h1>')
-    // Blockquote
-    .replace(/^> (.+)$/gm, '<blockquote class="ac-blockquote">$1</blockquote>')
-    // Unordered list
-    .replace(/^[\-\*] (.+)$/gm, '<li class="ac-li">$1</li>')
-    .replace(/(<li[^>]*>.*<\/li>\n?)+/g, s => `<ul class="ac-ul">${s}</ul>`)
-    // Ordered list
-    .replace(/^\d+\. (.+)$/gm, '<li class="ac-li">$1</li>')
-    // Task list
-    .replace(/^- \[x\] (.+)$/gm, '<li class="ac-task done">✅ $1</li>')
-    .replace(/^- \[ \] (.+)$/gm, '<li class="ac-task">☐ $1</li>')
-    // Links
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="ac-link">$1</a>')
-    // Horizontal rule
-    .replace(/^---$/gm, '<hr class="ac-hr" />')
-    // Paragraph breaks
-    .replace(/\n\n/g, '</p><p class="ac-p">')
-
-  return `<p class="ac-p">${html}</p>`
-    .replace(/<p class="ac-p"><\/p>/g, '')
-    .replace(/<p class="ac-p">(<(?:h[1-6]|pre|ul|ol|blockquote|hr)[^>]*>)/g, '$1')
-    .replace(/(<\/(?:h[1-6]|pre|ul|ol|blockquote|hr)>)<\/p>/g, '$1')
-}
-
-const rendered = computed(() => parseMarkdown(props.content))
+const rendered = computed(() => renderMarkdown(props.content, { allowHtml: props.allowHtml }))
 </script>
 
 <template>

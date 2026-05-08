@@ -6,7 +6,7 @@ defineProps<{
   logo?: string
   capabilities?: Array<{ icon: string; title: string; description: string }>
 }>()
-const emit = defineEmits<{ select: [prompt: string] }>()
+const _emit = defineEmits<{ select: [prompt: string] }>()
 </script>
 
 <template>

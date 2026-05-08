@@ -13,6 +13,7 @@
     "docs/**/*.ts",
     "docs/**/*.vue",
     "docs/.vitepress/**/*.ts",
+    "docs/.vitepress/**/*.vue",
     "docs/.vitepress/**/*.mts"
   ],
   "exclude": ["node_modules", "dist", "play/dist", "docs/.vitepress/dist"]

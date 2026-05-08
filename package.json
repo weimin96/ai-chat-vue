@@ -7,19 +7,29 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.esm.js",
-      "require": "./dist/index.cjs.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs.js"
     },
     "./styles": "./dist/style.css"
   },
+  "sideEffects": [
+    "*.css",
+    "**/*.css"
+  ],
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "scripts": {
     "dev": "vite --config play/vite.config.ts",
-    "build": "vite build && vue-tsc -p tsconfig.web.json --emitDeclarationOnly",
+    "build": "vite build",
+    "lint": "eslint .",
+    "typecheck": "vue-tsc -b tsconfig.json --noEmit",
+    "test": "vitest run --environment jsdom",
+    "prepublishOnly": "npm run build",
     "play:build": "vite build --config play/vite.config.ts",
     "play:preview": "vite preview --config play/vite.config.ts",
     "docs:dev": "vitepress dev docs",
@@ -28,13 +38,21 @@
     "preview": "vite preview"
   },
   "peerDependencies": {
+    "mermaid": "^11.14.0",
+    "shiki": "^4.0.2",
     "vue": "^3.5.33"
+  },
+  "peerDependenciesMeta": {
+    "mermaid": {
+      "optional": true
+    },
+    "shiki": {
+      "optional": true
+    }
   },
   "dependencies": {
     "dompurify": "^3.4.2",
-    "marked": "^18.0.3",
-    "mermaid": "^11.14.0",
-    "shiki": "^4.0.2"
+    "marked": "^18.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -44,15 +62,21 @@
     "@vitejs/plugin-vue": "^6.0.6",
     "autoprefixer": "^10.5.0",
     "eslint": "^10.3.0",
+    "eslint-plugin-simple-import-sort": "^13.0.0",
     "eslint-plugin-vue": "^10.9.0",
     "globals": "^17.6.0",
+    "jsdom": "^27.3.0",
+    "mermaid": "^11.14.0",
     "postcss": "^8.5.14",
     "prettier": "^3.8.3",
+    "shiki": "^4.0.2",
     "tailwindcss": "^4.2.4",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.59.2",
     "vite": "^8.0.10",
+    "vite-plugin-dts": "^5.0.0",
     "vitepress": "^1.6.4",
+    "vitest": "^4.1.5",
     "vue": "^3.5.33",
     "vue-eslint-parser": "^10.4.0",
     "vue-tsc": "^3.2.8"

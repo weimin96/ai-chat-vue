@@ -5,6 +5,6 @@
     "lib": ["ESNext"],
     "types": ["node"]
   },
-  "include": ["*.config.*", "play/*.config.*", "docs/.vitepress/**/*.ts"],
+  "include": ["*.config.*", "play/*.config.*", "docs/.vitepress/config.mts", "scripts/**/*"],
   "exclude": ["node_modules", "dist", "play/dist", "docs/.vitepress/dist"]
 }

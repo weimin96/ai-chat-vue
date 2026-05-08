@@ -17,7 +17,7 @@
  * </template>
  * ```
  */
-import { ref, computed, readonly } from 'vue'
+import { ref, readonly } from 'vue'
 import type { Message } from '../types'
 
 export interface UseHeadlessBubbleOptions {

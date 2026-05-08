@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useConversation } from '../../composables/useConversation'
 import type { Conversation } from '../../types'
 
-const { pinned, recent, archived, activeId, setActive, createConversation,
+const { pinned, recent, activeId, setActive, createConversation,
   deleteConversation, renameConversation, pinConversation, archive, exportConversation } = useConversation()
 
 const searchQuery = ref('')
 const editingId = ref<string | null>(null)
 const editTitle = ref('')
-const showArchived = ref(false)
 
 function startEdit(conv: Conversation) {
   editingId.value = conv.id

@@ -1,7 +1,8 @@
 <!-- MessageAvatar.vue -->
 <script setup lang="ts">
 import type { MessageRole } from '../../types'
-const props = defineProps<{ role: MessageRole; src?: string; name?: string }>()
+
+defineProps<{ role: MessageRole; src?: string; name?: string }>()
 </script>
 
 <template>

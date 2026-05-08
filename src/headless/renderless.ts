@@ -1,22 +1,8 @@
 /**
- * Renderless (headless) Vue components
- *
- * These wrap the headless composables as Vue components using the
- * "renderless component" pattern — they render nothing themselves,
- * exposing everything via scoped slots.
- *
- * Usage:
- * ```vue
- * <HeadlessBubble :message="msg" v-slot="bubble">
- *   <div :class="bubble.isUser ? 'my-user-style' : 'my-ai-style'">
- *     <span>{{ bubble.displayContent }}</span>
- *     <button @click="bubble.copy">Copy</button>
- *   </div>
- * </HeadlessBubble>
- * ```
+ * 无渲染组件只暴露状态与行为，由业务侧通过作用域插槽决定 DOM 结构。
  */
 
-import { defineComponent, h, toRef, type PropType } from 'vue'
+import { defineComponent, toRef, type PropType } from 'vue'
 import { useHeadlessBubble }             from './useHeadlessBubble'
 import { useHeadlessSender }             from './useHeadlessSender'
 import { useHeadlessBubbleList }         from './useHeadlessBubbleList'

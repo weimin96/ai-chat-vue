@@ -1,5 +1,6 @@
 import js from '@eslint/js'
 import globals from 'globals'
+import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import tseslint from 'typescript-eslint'
 import vue from 'eslint-plugin-vue'
 import vueParser from 'vue-eslint-parser'
@@ -21,6 +22,16 @@ export default [
   ...tseslint.configs.recommended,
   ...vue.configs['flat/recommended'],
   {
+    files: ['**/*.{js,mjs,cjs,ts,vue}'],
+    plugins: {
+      'simple-import-sort': simpleImportSort,
+    },
+    rules: {
+      'simple-import-sort/imports': 'warn',
+      'simple-import-sort/exports': 'warn',
+    },
+  },
+  {
     files: ['**/*.{ts,vue}'],
     languageOptions: {
       parser: vueParser,
@@ -35,8 +46,9 @@ export default [
       },
     },
     rules: {
+      'no-undef': 'off',
       'vue/multi-word-component-names': 'off',
-      'vue/no-v-html': 'off',
+      'vue/no-v-html': 'warn',
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
@@ -50,6 +62,7 @@ export default [
   {
     files: [
       '*.config.{js,cjs,mjs,ts}',
+      'scripts/**/*.{js,cjs,mjs}',
       'play/*.config.{js,cjs,mjs,ts}',
       'docs/**/*.config.{js,cjs,mjs,ts}',
       'docs/.vitepress/**/*.ts',

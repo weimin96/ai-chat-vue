@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import type { Artifact } from '../../types'
 
 const props = defineProps<{ artifact: Artifact }>()
-const emit = defineEmits<{ update: [content: string] }>()
+const _emit = defineEmits<{ update: [content: string] }>()
 
 const activeTab = ref<'preview' | 'source'>('preview')
 const isFullscreen = ref(false)
