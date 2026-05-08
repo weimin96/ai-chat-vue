@@ -6,7 +6,7 @@
 - [x] 消息列表缺少 aria-live 区域说明。Headless API 里提到 listAttrs 包含 ARIA attrs，但文档没有说明 aria-live="polite" 是否已内置，屏幕阅读器用户无法判断新消息是否会被播报。
 - [x] Sender 输入框没有明确的 aria-label。文档里的 placeholder 只是视觉提示，对盲人用户来说 <textarea> 需要关联的 <label> 或 aria-label，这个细节文档没有提及，Headless 的 textareaAttrs 里也没有列出是否包含。
 - [x] ToolCallCard 展开/收起没有 aria-expanded 说明。Headless useHeadlessToolCall 有 toggleAttrs，但没有说明是否包含 aria-expanded，键盘用户无法感知状态。
-- [] 颜色对比度没有验证说明。CSS 变量系统很灵活，但默认主题的对比度是否符合 WCAG AA 标准没有任何说明，对于企业级场景这是硬门槛。
+- [x] 颜色对比度没有验证说明。CSS 变量系统很灵活，但默认主题的对比度是否符合 WCAG AA 标准没有任何说明，对于企业级场景这是硬门槛。
 - [] StreamChunk 类型的 done 之外缺少错误 chunk 类型。createCustomAdapter 示例里 yield { type: 'text' } 和 { type: 'done' }，但没有 { type: 'error', error: Error } chunk。错误只能靠 generator 抛出异常，而 generator 抛异常的捕获方式对初学者不友好，也不利于流式中途错误恢复。
 - [] 适配器的 AbortSignal 使用没有文档说明。createCustomAdapter(async function* (messages, config, signal)) 里 signal 参数应该怎么与 fetch 集成？文档没有任何示例，新手无法正确实现停止生成。
 - [] Vercel AI SDK adapter 列在 README 里但文档站不存在对应页面。导航栏里没有 Adapters 分类，三个适配器（OpenAI、Ollama、Vercel AI SDK）的 API 文档完全缺失，用户无法知道每个 adapter 支持哪些配置项。
