@@ -3,11 +3,20 @@
 // ============================================================
 import type { StreamAdapter, StreamChunk, Message, ChatConfig } from '../types'
 
-function messagesToOpenAI(messages: Message[]) {
-  return messages.map(m => ({
+function messagesToOpenAI(messages: Message[], config: ChatConfig) {
+  const mappedMessages = messages.map(m => ({
     role: m.role,
     content: m.content,
   }))
+
+  if (!config.systemPrompt?.trim()) {
+    return mappedMessages
+  }
+
+  return [
+    { role: 'system', content: config.systemPrompt },
+    ...mappedMessages,
+  ]
 }
 
 // --- OpenAI Adapter ---
@@ -33,7 +42,7 @@ export function createOpenAIAdapter(options: {
         },
         body: JSON.stringify({
           model: config.model ?? model,
-          messages: messagesToOpenAI(messages),
+          messages: messagesToOpenAI(messages, config),
           stream: true,
           max_tokens: config.maxTokens ?? 4096,
           temperature: config.temperature ?? 0.7,
@@ -88,7 +97,7 @@ export function createOllamaAdapter(options: {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: config.model ?? model,
-          messages: messagesToOpenAI(messages),
+          messages: messagesToOpenAI(messages, config),
           stream: true,
         }),
       })
@@ -143,7 +152,7 @@ export function createAISDKAdapter(options: {
       const response = await fetch(options.endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...options.headers },
-        body: JSON.stringify({ messages: messagesToOpenAI(messages), config }),
+        body: JSON.stringify({ messages: messagesToOpenAI(messages, config), config }),
       })
 
       if (!response.ok) {

@@ -22,6 +22,8 @@ const adapter = createOpenAIAdapter({
 
 真实密钥不应放进浏览器 bundle。生产环境建议使用自定义后端代理，并在代理里调用 OpenAI 兼容接口。
 
+`config.systemPrompt` 会作为第一条 `system` 消息注入请求。
+
 ## Ollama
 
 ```ts
@@ -37,6 +39,8 @@ const adapter = createOllamaAdapter({
 | ---- | ---- | ------ | ---- |
 | `baseURL` | `string` | `http://localhost:11434` | Ollama 服务地址 |
 | `model` | `string` | `llama3.2` | 默认模型 |
+
+`config.systemPrompt` 会作为第一条 `system` 消息注入请求。
 
 ## Vercel AI SDK
 
@@ -55,6 +59,8 @@ const adapter = createAISDKAdapter({
 | `headers` | `Record<string, string>` | `undefined` | 附加请求头 |
 
 当前适配器按 Vercel AI SDK 文本流的 `0:` 前缀解析文本内容，并在流结束后发送 `done` chunk。
+
+`config.systemPrompt` 会随 `messages` 一起发送给业务侧 AI SDK 接口。
 
 ## 自定义适配器
 
