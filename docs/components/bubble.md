@@ -31,3 +31,5 @@ import source from '../examples/bubble/Basic.vue?raw'
 ## 注意事项
 
 复杂消息内容由子组件渲染，建议通过 `Message` 类型组织数据。
+
+`onEdit` 会在用户消息的编辑按钮点击时触发，并把当前 `message.content` 传给调用方。`Bubble` 不内置弹窗、内联编辑或自动重新生成；如果业务需要“编辑后重新发送”，应在回调中更新输入框或会话状态，再由业务逻辑调用发送流程。

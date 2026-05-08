@@ -81,6 +81,18 @@ function formatTime(ts: number) {
       </button>
     </template>
 
+    <button
+      v-if="isUser && !message.isStreaming"
+      @click="emit('edit', message.content)"
+      title="Edit"
+      class="p-1 rounded hover:bg-[var(--ac-hover,#f3f4f6)] text-[var(--ac-muted,#9ca3af)] hover:text-[var(--ac-text,#374151)] transition-colors"
+    >
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5"/>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+    </button>
+
     <!-- Delete -->
     <button
       @click="emit('delete')"
