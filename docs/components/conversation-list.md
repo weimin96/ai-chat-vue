@@ -19,7 +19,13 @@ import source from '../examples/conversation-list/Basic.vue?raw'
 
 ## API
 
-该组件不接收公开 Props，数据来自 `ChatProvider` 提供的聊天上下文。
+数据来自 `ChatProvider` 提供的聊天上下文。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| ---- | ---- | ------ | ---- |
+| `showCreateButton` | `boolean` | `true` | 是否显示新建会话按钮 |
+| `showSearch` | `boolean` | `true` | 是否显示搜索框 |
+| `emptyText` | `string` | `暂无会话` | 空状态文案 |
 
 | 操作     | 说明                                  |
 | -------- | ------------------------------------- |

@@ -3,6 +3,16 @@ import { ref } from 'vue'
 import { useConversation } from '../../composables/useConversation'
 import type { Conversation } from '../../types'
 
+withDefaults(defineProps<{
+  showCreateButton?: boolean
+  showSearch?: boolean
+  emptyText?: string
+}>(), {
+  showCreateButton: true,
+  showSearch: true,
+  emptyText: '暂无会话',
+})
+
 const { pinned, recent, activeId, setActive, createConversation,
   deleteConversation, renameConversation, pinConversation, archive, exportConversation } = useConversation()
 
@@ -42,7 +52,7 @@ function formatTime(ts: number) {
 <template>
   <div class="ac-conv-list flex flex-col h-full bg-[var(--ac-sidebar-bg,#f8f9fa)] border-r border-[var(--ac-border,#e5e7eb)]">
     <!-- 顶部操作区需要常驻，避免长列表滚动时新建入口消失。 -->
-    <div class="p-3 border-b border-[var(--ac-border,#e5e7eb)]">
+    <div v-if="showCreateButton" class="p-3 border-b border-[var(--ac-border,#e5e7eb)]">
       <button
         @click="createConversation()"
         class="w-full flex items-center gap-2 px-3 py-2 bg-[var(--ac-primary,#4f46e5)] text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
@@ -55,7 +65,7 @@ function formatTime(ts: number) {
     </div>
 
     <!-- 搜索入口独立于列表，便于后续扩展分组过滤。 -->
-    <div class="px-3 py-2">
+    <div v-if="showSearch" class="px-3 py-2">
       <div class="relative">
         <svg class="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-[var(--ac-muted,#9ca3af)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -107,7 +117,7 @@ function formatTime(ts: number) {
       <!-- 空状态只在无会话时出现，避免和过滤结果状态混淆。 -->
       <div v-if="!pinned.length && !recent.length" class="flex flex-col items-center justify-center py-12 text-center">
         <div class="text-3xl mb-2">💬</div>
-        <p class="text-xs text-[var(--ac-muted,#9ca3af)]">No conversations yet</p>
+        <p class="text-xs text-[var(--ac-muted,#9ca3af)]">{{ emptyText }}</p>
       </div>
     </div>
   </div>
