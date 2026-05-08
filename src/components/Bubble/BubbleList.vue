@@ -161,6 +161,10 @@ watch(visibleMessages, async () => {
   <div class="ac-bubble-list relative flex-1 overflow-hidden">
     <div
       ref="listRef"
+      role="log"
+      aria-label="会话消息"
+      aria-live="polite"
+      aria-relevant="additions"
       @scroll="onScroll"
       class="h-full overflow-y-auto scroll-smooth"
     >
