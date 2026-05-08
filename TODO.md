@@ -11,7 +11,7 @@
 - [x] 适配器的 AbortSignal 使用没有文档说明。createCustomAdapter(async function* (messages, config, signal)) 里 signal 参数应该怎么与 fetch 集成？文档没有任何示例，新手无法正确实现停止生成。
 - [x] Vercel AI SDK adapter 列在 README 里但文档站不存在对应页面。导航栏里没有 Adapters 分类，三个适配器（OpenAI、Ollama、Vercel AI SDK）的 API 文档完全缺失，用户无法知道每个 adapter 支持哪些配置项。
 - [x] 流式回复中断后没有说明是否有重连机制。网络抖动导致 SSE 断开时，库是否会自动重试？还是完全交给用户？对于生产可用的组件库这个行为必须明确。
-- [] useChat() 暴露的 addMessage / updateMessage 是否线程安全不明确。流式回复期间如果外部也调用 updateMessage，可能产生竞争覆盖。应在文档或类型注释中说明流式期间哪些操作是安全的。
+- [x] useChat() 暴露的 addMessage / updateMessage 是否线程安全不明确。流式回复期间如果外部也调用 updateMessage，可能产生竞争覆盖。应在文档或类型注释中说明流式期间哪些操作是安全的。
 - [] 没有持久化层接口。所有 conversations 和 messages 都存在内存里，刷新即丢失。对于任何真实项目，这是第一个要解决的问题。库应提供 persistence 插件接口（如 localStorage adapter、IndexedDB adapter），让用户可插拔，而不是完全自己实现。
 - [] activeId 切换会话时没有说明消息加载时机。文档未说明切换会话后 messages 是立即替换还是有过渡动画，对于有持久化需求的项目，消息是否支持异步加载（懒加载）也没有接口支持。
 - [] 缺少 system prompt 配置入口 ChatConfig 里没有看到 systemPrompt 字段。实际上几乎每个 AI 应用都需要注入 system prompt，适配器层虽然可以自己拼装，但在 ChatProvider config 层面缺少这个一等公民字段会让初学者困惑。

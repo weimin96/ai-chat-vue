@@ -51,3 +51,5 @@ import source from '../examples/chat-provider/Basic.vue?raw'
 ## 注意事项
 
 未传入 `adapter` 时，用户消息可以进入会话，但不会产生助手流式回复。
+
+`useChat()` 暴露的 `addMessage`、`updateMessage`、`deleteMessage` 是同步内存操作，不提供跨异步任务的写入锁。流式回复期间，内部会持续更新当前助手消息的 `content`、`thinking`、`toolCalls` 和 `artifacts`。外部代码可以新增独立消息或更新非流式消息；若同时更新正在流式生成的同一条助手消息，需要避免覆盖 `content`，或在业务层合并后一次性写入。
