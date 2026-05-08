@@ -42,7 +42,16 @@ export function parseMarkdown(text: string, options: RenderMarkdownOptions = {})
 }
 
 export function renderMarkdown(text: string, options: RenderMarkdownOptions = {}): string {
-  return DOMPurify.sanitize(parseMarkdown(text, options), {
+  const purifier = DOMPurify as unknown as {
+    sanitize?: (html: string, config?: { ADD_ATTR?: string[] }) => string
+  }
+  const html = parseMarkdown(text, options)
+
+  if (!purifier.sanitize) {
+    return html
+  }
+
+  return purifier.sanitize(html, {
     ADD_ATTR: ['target'],
   })
 }
