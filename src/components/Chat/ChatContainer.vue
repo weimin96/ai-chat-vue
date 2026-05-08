@@ -6,7 +6,7 @@ import Sender from '../Sender/Sender.vue'
 import Welcome from '../Welcome/Welcome.vue'
 import PromptCards from '../Welcome/PromptCards.vue'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   showWelcome?: boolean
   welcomeTitle?: string
   welcomeSubtitle?: string
@@ -18,12 +18,13 @@ withDefaults(defineProps<{
   enableMarkdown?: boolean
 }>(), {
   showWelcome: true,
-  enableMarkdown: true,
 })
 
-const { messages, isGenerating, sendMessage, stopGeneration, retryMessage, deleteMessage } = useChat()
+const chat = useChat()
+const { messages, isGenerating, sendMessage, stopGeneration, retryMessage, deleteMessage } = chat
 
 const isEmpty = computed(() => messages.value.length === 0)
+const resolvedEnableMarkdown = computed(() => props.enableMarkdown ?? chat.config.enableMarkdown ?? true)
 
 async function handleSend(content: string) {
   await sendMessage(content)
@@ -47,7 +48,7 @@ async function handleSend(content: string) {
         <BubbleList
           :messages="messages"
           :is-generating="isGenerating"
-          :enable-markdown="enableMarkdown"
+          :enable-markdown="resolvedEnableMarkdown"
           :on-retry="retryMessage"
           :on-delete="deleteMessage"
         />

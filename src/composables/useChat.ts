@@ -290,6 +290,7 @@ function createChatState(
   void hydratePersistence()
 
   return {
+    config,
     conversations,
     activeId,
     activeConversation,

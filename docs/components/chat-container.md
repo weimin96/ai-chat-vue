@@ -29,7 +29,7 @@ import source from '../examples/chat-container/Basic.vue?raw'
 | `placeholder`       | `string`                                                  | `undefined` | 输入框占位文本         |
 | `enableVoice`       | `boolean`                                                 | `false`     | 是否启用语音按钮       |
 | `enableAttachments` | `boolean`                                                 | `false`     | 是否启用附件按钮       |
-| `enableMarkdown`    | `boolean`                                                 | `true`      | 是否渲染助手 Markdown  |
+| `enableMarkdown`    | `boolean`                                                 | `undefined` | 是否渲染助手 Markdown  |
 
 | 插槽     | 说明           |
 | -------- | -------------- |
@@ -38,3 +38,5 @@ import source from '../examples/chat-container/Basic.vue?raw'
 ## 注意事项
 
 组件必须位于 `ChatProvider` 内部，否则无法访问聊天上下文。
+
+`enableMarkdown` 的优先级为 `ChatContainer.enableMarkdown` 高于 `ChatProvider.config.enableMarkdown`。两者都未传入时默认启用 Markdown 渲染。
