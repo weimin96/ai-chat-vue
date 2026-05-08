@@ -21,6 +21,7 @@ import source from '../examples/sender/Basic.vue?raw'
 
 | 属性                | 类型       | 默认值       | 说明         |
 | ------------------- | ---------- | ------------ | ------------ |
+| `value`             | `string`   | `undefined`  | 输入框受控值 |
 | `disabled`          | `boolean`  | `false`      | 是否禁用     |
 | `isGenerating`      | `boolean`  | `false`      | 是否生成中   |
 | `placeholder`       | `string`   | `Message...` | 占位文本     |
@@ -32,6 +33,7 @@ import source from '../examples/sender/Basic.vue?raw'
 
 | 事件     | 说明     |
 | -------- | -------- |
+| `update:value` | 输入值变化 |
 | `send`   | 发送消息 |
 | `stop`   | 停止生成 |
 | `attach` | 选择附件 |
@@ -39,6 +41,14 @@ import source from '../examples/sender/Basic.vue?raw'
 | 插槽     | 说明         |
 | -------- | ------------ |
 | `footer` | 底部说明文案 |
+
+## 双向绑定
+
+```vue
+<Sender v-model:value="draft" @send="sendMessage" />
+```
+
+`v-model:value` 可用于建议项填入、草稿恢复和外部清空。发送成功后组件会清空内部输入并同步触发 `update:value`。
 
 ## 可访问性
 

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import AttachmentButton from './AttachmentButton.vue'
 
 const props = withDefaults(defineProps<{
+  value?: string
   disabled?: boolean
   isGenerating?: boolean
   placeholder?: string
@@ -20,6 +21,7 @@ const props = withDefaults(defineProps<{
 })
 
 const emit = defineEmits<{
+  'update:value': [value: string]
   send: [content: string]
   stop: []
   attach: [files: FileList]
@@ -30,6 +32,17 @@ const textareaRef = ref<HTMLTextAreaElement | null>(null)
 const isRecording = ref(false)
 
 const canSend = computed(() => input.value.trim().length > 0 && !props.disabled)
+
+watch(() => props.value, (value) => {
+  if (value !== undefined && value !== input.value) {
+    input.value = value
+  }
+}, { immediate: true })
+
+function updateInput(value: string) {
+  input.value = value
+  emit('update:value', value)
+}
 
 function autoResize() {
   const el = textareaRef.value
@@ -54,13 +67,18 @@ function send() {
   const content = input.value.trim()
   if (!content) return
   emit('send', content)
-  input.value = ''
+  updateInput('')
   if (textareaRef.value) textareaRef.value.style.height = 'auto'
 }
 
 function handleSuggestion(s: string) {
-  input.value = s
+  updateInput(s)
   textareaRef.value?.focus()
+}
+
+function handleInput(e: Event) {
+  updateInput((e.target as HTMLTextAreaElement).value)
+  autoResize()
 }
 
 async function toggleVoice() {
@@ -81,7 +99,7 @@ async function toggleVoice() {
   recognition.continuous = false
   recognition.interimResults = true
   recognition.onresult = (e: AiChatSpeechRecognitionEvent) => {
-    input.value = Array.from(e.results).map(r => r[0].transcript).join('')
+    updateInput(Array.from(e.results).map(r => r[0].transcript).join(''))
   }
   recognition.onend = () => { isRecording.value = false }
   recognition.start()
@@ -110,12 +128,12 @@ async function toggleVoice() {
       <!-- 文本域高度由输入内容驱动，减少短消息场景的视觉噪声。 -->
       <textarea
         ref="textareaRef"
-        v-model="input"
+        :value="input"
         :placeholder="placeholder"
         :aria-label="ariaLabel"
         :disabled="disabled"
         :maxlength="maxLength"
-        @input="autoResize"
+        @input="handleInput"
         @keydown="handleKeydown"
         rows="1"
         class="flex-1 resize-none bg-transparent text-sm text-[var(--ac-text,#1f2937)] placeholder-[var(--ac-muted,#9ca3af)] outline-none leading-relaxed max-h-48"
