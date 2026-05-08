@@ -24,6 +24,7 @@ import source from '../examples/sender/Basic.vue?raw'
 | `disabled`          | `boolean`  | `false`      | 是否禁用     |
 | `isGenerating`      | `boolean`  | `false`      | 是否生成中   |
 | `placeholder`       | `string`   | `Message...` | 占位文本     |
+| `ariaLabel`         | `string`   | `消息输入`   | 文本域可访问名称 |
 | `enableVoice`       | `boolean`  | `false`      | 是否启用语音 |
 | `enableAttachments` | `boolean`  | `false`      | 是否启用附件 |
 | `suggestions`       | `string[]` | `undefined`  | 建议项       |
@@ -38,3 +39,7 @@ import source from '../examples/sender/Basic.vue?raw'
 | 插槽     | 说明         |
 | -------- | ------------ |
 | `footer` | 底部说明文案 |
+
+## 可访问性
+
+`placeholder` 只作为视觉提示，不能替代文本域名称。`Sender` 默认给 `<textarea>` 设置 `aria-label="消息输入"`，业务侧可通过 `ariaLabel` 覆盖。使用 Headless API 时，`useHeadlessSender().textareaAttrs` 已包含 `aria-label`、`aria-multiline` 和 `aria-describedby`。

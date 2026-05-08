@@ -6,12 +6,14 @@ const props = withDefaults(defineProps<{
   disabled?: boolean
   isGenerating?: boolean
   placeholder?: string
+  ariaLabel?: string
   enableVoice?: boolean
   enableAttachments?: boolean
   suggestions?: string[]
   maxLength?: number
 }>(), {
   placeholder: 'Message...',
+  ariaLabel: '消息输入',
   enableVoice: false,
   enableAttachments: false,
   maxLength: 32000,
@@ -110,6 +112,7 @@ async function toggleVoice() {
         ref="textareaRef"
         v-model="input"
         :placeholder="placeholder"
+        :aria-label="ariaLabel"
         :disabled="disabled"
         :maxlength="maxLength"
         @input="autoResize"
