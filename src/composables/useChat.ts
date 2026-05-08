@@ -97,6 +97,15 @@ function createChatState(config: ChatConfig, adapter: StreamAdapter | null) {
 
       for await (const chunk of stream) {
         if (abortController.value?.signal.aborted) break
+        if (chunk.type === 'error') {
+          updateMessage(assistantMsg.id, {
+            isError: true,
+            isStreaming: false,
+            errorMessage: chunk.error ?? '生成失败',
+          })
+          break
+        }
+        if (chunk.type === 'done') break
         await processChunk(chunk, assistantMsg.id, accText)
         if (chunk.type === 'text' && chunk.content) accText += chunk.content
       }
