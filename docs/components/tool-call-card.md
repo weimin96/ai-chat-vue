@@ -26,3 +26,5 @@ import source from '../examples/tool-call-card/Basic.vue?raw'
 ## 注意事项
 
 参数和结果会以文本形式展示，敏感字段应在传入前脱敏。
+
+展开按钮内置 `aria-expanded` 和 `aria-controls`，键盘用户可以感知参数与结果面板的展开状态。使用 Headless API 时，`useHeadlessToolCall().toggleAttrs` 提供同样的 `aria-expanded`、`aria-controls` 和状态化 `aria-label`，并会随展开状态同步更新。

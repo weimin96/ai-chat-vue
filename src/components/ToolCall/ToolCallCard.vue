@@ -23,6 +23,8 @@ function formatArg(val: unknown): string {
   <div :class="`ac-tool-call rounded-lg border ${statusConfig.border} ${statusConfig.bg} overflow-hidden my-1`">
     <button
       @click="expanded = !expanded"
+      :aria-expanded="String(expanded)"
+      :aria-controls="`tool-call-panel-${toolCall.id}`"
       class="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium"
     >
       <span class="text-sm">{{ statusConfig.icon }}</span>
@@ -41,7 +43,7 @@ function formatArg(val: unknown): string {
     </button>
 
     <Transition name="slide">
-      <div v-if="expanded" class="px-3 pb-3 space-y-2">
+      <div v-if="expanded" :id="`tool-call-panel-${toolCall.id}`" class="px-3 pb-3 space-y-2">
         <!-- Arguments -->
         <div v-if="Object.keys(toolCall.arguments).length">
           <p class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1">Arguments</p>

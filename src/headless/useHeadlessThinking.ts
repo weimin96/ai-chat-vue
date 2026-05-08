@@ -1,4 +1,4 @@
-import { ref, computed, readonly, type ComputedRef, type Ref } from 'vue'
+import { computed, reactive, readonly, ref, watchEffect, type ComputedRef, type Ref } from 'vue'
 import type { ThinkingStep } from '../types'
 
 export interface UseHeadlessThinkingOptions {
@@ -110,19 +110,24 @@ export function useHeadlessToolCall(options: UseHeadlessToolCallOptions): UseHea
       : `${(toolCall.durationMs / 1000).toFixed(2)}s`
     : null
 
-  const toggleAttrs: Record<string, string> = {
+  const toggleAttrs = reactive<Record<string, string>>({
     type: 'button',
     'aria-expanded': String(isExpanded.value),
     'aria-controls': `tool-panel-${toolCall.id}`,
     'aria-label': `Tool call: ${toolCall.name}, status: ${statusLabel}`,
-  }
+  })
 
-  const panelAttrs: Record<string, string | boolean> = {
+  const panelAttrs = reactive<Record<string, string | boolean>>({
     id: `tool-panel-${toolCall.id}`,
     role: 'region',
     'aria-label': `Tool call result for ${toolCall.name}`,
     hidden: !isExpanded.value,
-  }
+  })
+
+  watchEffect(() => {
+    toggleAttrs['aria-expanded'] = String(isExpanded.value)
+    panelAttrs.hidden = !isExpanded.value
+  })
 
   return {
     isExpanded: readonly(isExpanded),
