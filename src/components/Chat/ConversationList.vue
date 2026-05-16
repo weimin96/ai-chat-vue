@@ -42,8 +42,8 @@ function formatTime(ts: number) {
   const d = new Date(ts)
   const now = new Date()
   const diff = now.getTime() - d.getTime()
-  if (diff < 60000) return 'Just now'
-  if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`
+  if (diff < 60000) return '刚刚'
+  if (diff < 3600000) return `${Math.floor(diff / 60000)} 分钟前`
   if (diff < 86400000) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   return d.toLocaleDateString([], { month: 'short', day: 'numeric' })
 }
@@ -60,7 +60,7 @@ function formatTime(ts: number) {
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
         </svg>
-        New Conversation
+        新建会话
       </button>
     </div>
 
@@ -72,7 +72,7 @@ function formatTime(ts: number) {
         </svg>
         <input
           v-model="searchQuery"
-          placeholder="Search..."
+          placeholder="搜索会话"
           class="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-[var(--ac-border,#e5e7eb)] rounded-md outline-none focus:border-[var(--ac-primary,#4f46e5)] transition-colors"
         />
       </div>
@@ -82,7 +82,7 @@ function formatTime(ts: number) {
     <div class="flex-1 overflow-y-auto px-2 py-1 space-y-0.5">
       <!-- 置顶会话优先展示，保持高频会话的稳定位置。 -->
       <template v-if="pinned.length">
-        <p class="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--ac-muted,#9ca3af)]">Pinned</p>
+        <p class="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--ac-muted,#9ca3af)]">置顶</p>
         <ConvItem
           v-for="conv in pinned" :key="conv.id"
           :conv="conv" :active="activeId === conv.id"
@@ -106,7 +106,7 @@ function formatTime(ts: number) {
 
       <!-- 最近会话保留默认时间顺序，降低用户回到上下文的成本。 -->
       <template v-if="recent.length">
-        <p v-if="pinned.length" class="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--ac-muted,#9ca3af)] mt-2">Recent</p>
+        <p v-if="pinned.length" class="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--ac-muted,#9ca3af)] mt-2">最近</p>
         <ConvItem
           v-for="conv in recent" :key="conv.id"
           :conv="conv" :active="activeId === conv.id"
@@ -130,7 +130,7 @@ function formatTime(ts: number) {
 
       <!-- 空状态只在无会话时出现，避免和过滤结果状态混淆。 -->
       <div v-if="!pinned.length && !recent.length" class="flex flex-col items-center justify-center py-12 text-center">
-        <div class="text-3xl mb-2">💬</div>
+        <div class="text-xs font-semibold mb-2 text-[var(--ac-muted,#9ca3af)]">空</div>
         <p class="text-xs text-[var(--ac-muted,#9ca3af)]">{{ emptyText }}</p>
       </div>
     </div>
@@ -163,11 +163,11 @@ const ConvItem = defineComponent({
         h('p', { class: 'text-[10px] text-[var(--ac-muted,#9ca3af)] mt-0.5' }, props.formatTime(conv.updatedAt)),
       ]
       const defaultActions = [
-        { label: 'Rename', action: () => { emit('start-edit', conv); menuOpen.value = false } },
-        { label: conv.isPinned ? 'Unpin' : 'Pin', action: () => { emit('pin'); menuOpen.value = false } },
-        { label: 'Archive', action: () => { emit('archive'); menuOpen.value = false } },
-        { label: 'Export', action: () => { emit('export'); menuOpen.value = false } },
-        { label: 'Delete', action: () => { emit('delete'); menuOpen.value = false }, class: 'text-red-500' },
+        { label: '重命名', action: () => { emit('start-edit', conv); menuOpen.value = false } },
+        { label: conv.isPinned ? '取消置顶' : '置顶', action: () => { emit('pin'); menuOpen.value = false } },
+        { label: '归档', action: () => { emit('archive'); menuOpen.value = false } },
+        { label: '导出', action: () => { emit('export'); menuOpen.value = false } },
+        { label: '删除', action: () => { emit('delete'); menuOpen.value = false }, class: 'text-red-500' },
       ].map(item => h('button', {
         class: `w-full text-left px-3 py-1.5 hover:bg-[var(--ac-hover,#f3f4f6)] transition-colors ${item.class ?? ''}`,
         onClick: item.action,

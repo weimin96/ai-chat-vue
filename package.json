@@ -29,7 +29,8 @@
     "lint": "eslint .",
     "typecheck": "vue-tsc -b tsconfig.json --noEmit",
     "test": "vitest run --environment jsdom",
-    "prepublishOnly": "npm run build",
+    "size": "size-limit",
+    "prepublishOnly": "npm run build && npm run size",
     "play:build": "vite build --config play/vite.config.ts",
     "play:preview": "vite preview --config play/vite.config.ts",
     "docs:dev": "vitepress dev docs",
@@ -56,11 +57,13 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@size-limit/file": "^12.1.0",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@tailwindcss/postcss": "^4.2.4",
     "@types/node": "^25.6.0",
     "@vitejs/plugin-vue": "^6.0.6",
     "autoprefixer": "^10.5.0",
+    "esbuild": "^0.28.0",
     "eslint": "^10.3.0",
     "eslint-plugin-simple-import-sort": "^13.0.0",
     "eslint-plugin-vue": "^10.9.0",
@@ -70,6 +73,7 @@
     "postcss": "^8.5.14",
     "prettier": "^3.8.3",
     "shiki": "^4.0.2",
+    "size-limit": "^12.1.0",
     "tailwindcss": "^4.2.4",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.59.2",
@@ -90,5 +94,15 @@
     "openai",
     "streaming"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "size-limit": [
+    {
+      "path": "dist/index.esm.js",
+      "limit": "120 KB"
+    },
+    {
+      "path": "dist/style.css",
+      "limit": "80 KB"
+    }
+  ]
 }

@@ -5,7 +5,7 @@ import source from '../examples/code-block/Basic.vue?raw'
 
 # CodeBlock
 
-`CodeBlock` 展示代码片段，支持复制、行号、折叠和运行按钮。
+`CodeBlock` 展示代码片段，支持 Shiki 高亮、复制、行号、折叠和运行按钮。未安装 Shiki 或高亮加载失败时，会回退为纯文本展示。
 
 ## 导入方式
 
@@ -34,7 +34,7 @@ import source from '../examples/code-block/Basic.vue?raw'
 
 ## Shiki 预加载
 
-如果项目在代码块进入视口后再加载 Shiki，首次高亮可能出现明显延迟。可以在应用启动阶段调用 `preloadShiki()` 提前加载 WASM、主题和语言包：
+代码块会按需加载 Shiki。为了降低首次高亮延迟，可以在应用启动阶段调用 `preloadShiki()` 提前加载主题和语言包：
 
 ```ts
 import { preloadShiki } from '@weimin96/ai-chat-vue'
@@ -45,4 +45,4 @@ void preloadShiki({
 })
 ```
 
-`preloadShiki()` 会复用首次创建的加载 Promise，重复调用不会重复下载同一批核心资源。需要读取已启动的预加载任务时，可调用 `getPreloadedShikiHighlighter()`。
+`preloadShiki()` 会复用首次创建的加载 Promise，重复调用不会重复下载同一批核心资源。需要读取已启动的预加载任务时，可调用 `getPreloadedShikiHighlighter()`。组件会把未知语言回退为 `text`，避免把任意语言值直接交给高亮器。

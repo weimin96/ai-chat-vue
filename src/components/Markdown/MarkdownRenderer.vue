@@ -53,19 +53,25 @@ onBeforeUnmount(clearRenderTimer)
 </template>
 
 <style>
-.ac-markdown .ac-p { margin: 0.375rem 0; line-height: 1.7; }
-.ac-markdown .ac-h1 { font-size: 1.25rem; font-weight: 700; margin: 1rem 0 0.5rem; }
-.ac-markdown .ac-h2 { font-size: 1.1rem; font-weight: 600; margin: 0.875rem 0 0.375rem; }
-.ac-markdown .ac-h3 { font-size: 1rem; font-weight: 600; margin: 0.75rem 0 0.25rem; }
-.ac-markdown .ac-ul { list-style: disc; padding-left: 1.25rem; margin: 0.375rem 0; }
-.ac-markdown .ac-li { margin: 0.125rem 0; }
-.ac-markdown .ac-blockquote { border-left: 3px solid var(--ac-primary, #4f46e5); padding-left: 0.75rem; color: var(--ac-muted, #6b7280); margin: 0.5rem 0; font-style: italic; }
-.ac-markdown .ac-link { color: var(--ac-primary, #4f46e5); text-decoration: underline; text-underline-offset: 2px; }
-.ac-markdown .ac-link:hover { opacity: 0.8; }
-.ac-markdown .ac-hr { border: none; border-top: 1px solid var(--ac-border, #e5e7eb); margin: 0.75rem 0; }
-.ac-markdown .ac-inline-code { background: rgba(79,70,229,0.08); color: #4f46e5; padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.875em; font-family: 'Fira Code', 'Cascadia Code', monospace; }
+.ac-markdown p { margin: 0.375rem 0; line-height: 1.7; }
+.ac-markdown h1 { font-size: 1.25rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+.ac-markdown h2 { font-size: 1.1rem; font-weight: 600; margin: 0.875rem 0 0.375rem; }
+.ac-markdown h3 { font-size: 1rem; font-weight: 600; margin: 0.75rem 0 0.25rem; }
+.ac-markdown ul { list-style: disc; padding-left: 1.25rem; margin: 0.375rem 0; }
+.ac-markdown ol { list-style: decimal; padding-left: 1.25rem; margin: 0.375rem 0; }
+.ac-markdown li { margin: 0.125rem 0; }
+.ac-markdown li:has(input[type='checkbox']) { list-style: none; margin-left: -1.25rem; }
+.ac-markdown blockquote { border-left: 3px solid var(--ac-primary, #4f46e5); padding-left: 0.75rem; color: var(--ac-muted, #6b7280); margin: 0.5rem 0; font-style: italic; }
+.ac-markdown a { color: var(--ac-primary, #4f46e5); text-decoration: underline; text-underline-offset: 2px; }
+.ac-markdown a:hover { opacity: 0.8; }
+.ac-markdown hr { border: none; border-top: 1px solid var(--ac-border, #e5e7eb); margin: 0.75rem 0; }
+.ac-markdown code { background: rgba(79,70,229,0.08); color: #4f46e5; padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.875em; font-family: 'Fira Code', 'Cascadia Code', monospace; }
 .ac-markdown pre { background: #1e1e2e; color: #cdd6f4; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin: 0.5rem 0; font-size: 0.8rem; font-family: 'Fira Code', monospace; line-height: 1.6; }
 .ac-markdown pre code { background: none; color: inherit; padding: 0; }
+.ac-markdown table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 0.875rem; }
+.ac-markdown th,
+.ac-markdown td { border: 1px solid var(--ac-border, #e5e7eb); padding: 0.375rem 0.5rem; text-align: left; }
+.ac-markdown th { background: var(--ac-surface, #f9fafb); font-weight: 600; }
 .ac-markdown strong { font-weight: 600; }
 .ac-markdown em { font-style: italic; }
 .ac-markdown del { text-decoration: line-through; color: var(--ac-muted, #9ca3af); }

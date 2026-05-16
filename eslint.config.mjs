@@ -11,6 +11,7 @@ export default [
       'dist/**',
       'play/dist/**',
       'docs/.vitepress/dist/**',
+      'docs/.vitepress/cache/**',
       'node_modules/**',
       'coverage/**',
       'task_plan.md',

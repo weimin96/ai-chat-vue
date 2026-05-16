@@ -1,7 +1,22 @@
-// ============================================================
-// Adapters
-// ============================================================
-import type { StreamAdapter, StreamChunk, Message, ChatConfig } from '../types'
+import { parseNdjson, parseSSE, parseTextLines } from '../utils/streamParsers'
+import type { ChatConfig, Message, StreamAdapter, StreamChunk } from '../types'
+
+interface OpenAIStreamChunk {
+  choices?: Array<{
+    delta?: {
+      content?: string
+      reasoning_content?: string
+    }
+    finish_reason?: string | null
+  }>
+}
+
+interface OllamaStreamChunk {
+  message?: {
+    content?: string
+  }
+  done?: boolean
+}
 
 function messagesToOpenAI(messages: Message[], config: ChatConfig) {
   const mappedMessages = messages.map(m => ({
@@ -19,7 +34,64 @@ function messagesToOpenAI(messages: Message[], config: ChatConfig) {
   ]
 }
 
-// --- OpenAI Adapter ---
+function createRequestAbortController(signal?: AbortSignal) {
+  const controller = new AbortController()
+
+  if (!signal) {
+    return {
+      controller,
+      cleanup: () => {},
+    }
+  }
+
+  if (signal.aborted) {
+    controller.abort()
+    return {
+      controller,
+      cleanup: () => {},
+    }
+  }
+
+  const abort = () => controller.abort()
+  signal.addEventListener('abort', abort, { once: true })
+
+  return {
+    controller,
+    cleanup: () => signal.removeEventListener('abort', abort),
+  }
+}
+
+function isAbortError(err: unknown) {
+  return err instanceof Error && err.name === 'AbortError'
+}
+
+async function readErrorMessage(response: Response, fallback: string) {
+  let raw: string
+
+  try {
+    raw = await response.text()
+  } catch {
+    return fallback
+  }
+
+  if (!raw.trim()) return fallback
+
+  try {
+    const payload = JSON.parse(raw) as {
+      error?: string | { message?: string }
+      message?: string
+    }
+
+    if (typeof payload.error === 'string') return payload.error
+    if (payload.error?.message) return payload.error.message
+    if (payload.message) return payload.message
+  } catch {
+    return raw
+  }
+
+  return fallback
+}
+
 export function createOpenAIAdapter(options: {
   apiKey: string
   baseURL?: string
@@ -30,154 +102,250 @@ export function createOpenAIAdapter(options: {
 
   return {
     name: 'openai',
-    abort() { abortCtrl?.abort() },
-    async *stream(messages: Message[], config: ChatConfig): AsyncIterable<StreamChunk> {
-      abortCtrl = new AbortController()
-      const response = await fetch(`${baseURL}/chat/completions`, {
-        method: 'POST',
-        signal: abortCtrl.signal,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: config.model ?? model,
-          messages: messagesToOpenAI(messages, config),
-          stream: true,
-          max_tokens: config.maxTokens ?? 4096,
-          temperature: config.temperature ?? 0.7,
-        }),
-      })
+    abort() {
+      abortCtrl?.abort()
+    },
+    async *stream(
+      messages: Message[],
+      config: ChatConfig,
+      signal?: AbortSignal
+    ): AsyncIterable<StreamChunk> {
+      const request = createRequestAbortController(signal)
+      abortCtrl = request.controller
 
-      if (!response.ok) {
-        const err = await response.json()
-        yield { type: 'error', error: err.error?.message ?? 'OpenAI API error' }
-        return
-      }
+      try {
+        const response = await fetch(`${baseURL}/chat/completions`, {
+          method: 'POST',
+          signal: request.controller.signal,
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model: config.model ?? model,
+            messages: messagesToOpenAI(messages, config),
+            stream: true,
+            max_tokens: config.maxTokens ?? 4096,
+            temperature: config.temperature ?? 0.7,
+          }),
+        })
 
-      const reader = response.body!.getReader()
-      const decoder = new TextDecoder()
-      let buf = ''
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        buf += decoder.decode(value, { stream: true })
-        const lines = buf.split('\n')
-        buf = lines.pop() ?? ''
-
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue
-          const data = line.slice(6).trim()
-          if (data === '[DONE]') { yield { type: 'done' }; return }
-          try {
-            const json = JSON.parse(data)
-            const delta = json.choices?.[0]?.delta
-            if (delta?.content) yield { type: 'text', content: delta.content }
-            if (delta?.reasoning_content) yield { type: 'thinking', content: delta.reasoning_content }
-          } catch { /* skip */ }
+        if (!response.ok) {
+          yield { type: 'error', error: await readErrorMessage(response, 'OpenAI 请求失败') }
+          return
         }
+
+        if (!response.body) {
+          yield { type: 'error', error: 'OpenAI 响应体为空' }
+          return
+        }
+
+        for await (const data of parseSSE(response)) {
+          if (request.controller.signal.aborted) return
+          if (!data) continue
+          if (data === '[DONE]') {
+            yield { type: 'done' }
+            return
+          }
+
+          let json: OpenAIStreamChunk
+          try {
+            json = JSON.parse(data) as OpenAIStreamChunk
+          } catch (err: unknown) {
+            const reason = err instanceof Error ? err.message : '未知解析错误'
+            yield { type: 'error', error: `OpenAI 流式响应解析失败：${reason}` }
+            return
+          }
+
+          const choice = json.choices?.[0]
+          const delta = choice?.delta
+          if (delta?.content) yield { type: 'text', content: delta.content }
+          if (delta?.reasoning_content) {
+            yield { type: 'thinking', content: delta.reasoning_content }
+          }
+          if (choice?.finish_reason) {
+            yield { type: 'done' }
+            return
+          }
+        }
+
+        yield { type: 'done' }
+      } catch (err: unknown) {
+        if (request.controller.signal.aborted || isAbortError(err)) return
+        yield {
+          type: 'error',
+          error: err instanceof Error ? err.message : 'OpenAI 请求异常',
+        }
+      } finally {
+        request.cleanup()
+        if (abortCtrl === request.controller) abortCtrl = null
       }
     },
   }
 }
 
-// --- Ollama Adapter ---
 export function createOllamaAdapter(options: {
   baseURL?: string
   model?: string
 }): StreamAdapter {
   const { baseURL = 'http://localhost:11434', model = 'llama3.2' } = options
+  let abortCtrl: AbortController | null = null
 
   return {
     name: 'ollama',
-    async *stream(messages: Message[], config: ChatConfig): AsyncIterable<StreamChunk> {
-      const response = await fetch(`${baseURL}/api/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: config.model ?? model,
-          messages: messagesToOpenAI(messages, config),
-          stream: true,
-        }),
-      })
+    abort() {
+      abortCtrl?.abort()
+    },
+    async *stream(
+      messages: Message[],
+      config: ChatConfig,
+      signal?: AbortSignal
+    ): AsyncIterable<StreamChunk> {
+      const request = createRequestAbortController(signal)
+      abortCtrl = request.controller
 
-      if (!response.ok) {
-        yield { type: 'error', error: 'Ollama API error' }
-        return
-      }
+      try {
+        const response = await fetch(`${baseURL}/api/chat`, {
+          method: 'POST',
+          signal: request.controller.signal,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: config.model ?? model,
+            messages: messagesToOpenAI(messages, config),
+            stream: true,
+          }),
+        })
 
-      const reader = response.body!.getReader()
-      const decoder = new TextDecoder()
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        const text = decoder.decode(value)
-        for (const line of text.split('\n').filter(Boolean)) {
-          try {
-            const json = JSON.parse(line)
-            if (json.message?.content) yield { type: 'text', content: json.message.content }
-            if (json.done) yield { type: 'done' }
-          } catch { /* skip */ }
+        if (!response.ok) {
+          yield { type: 'error', error: await readErrorMessage(response, 'Ollama 请求失败') }
+          return
         }
+
+        for await (const json of parseNdjson<OllamaStreamChunk>(response)) {
+          if (request.controller.signal.aborted) return
+          if (json.message?.content) yield { type: 'text', content: json.message.content }
+          if (json.done) {
+            yield { type: 'done' }
+            return
+          }
+        }
+
+        yield { type: 'done' }
+      } catch (err: unknown) {
+        if (request.controller.signal.aborted || isAbortError(err)) return
+        yield {
+          type: 'error',
+          error: err instanceof Error ? err.message : 'Ollama 请求异常',
+        }
+      } finally {
+        request.cleanup()
+        if (abortCtrl === request.controller) abortCtrl = null
       }
     },
   }
 }
 
-// --- Custom Adapter ---
 export function createCustomAdapter(
-  handler: (messages: Message[], config: ChatConfig, signal: AbortSignal) => AsyncIterable<StreamChunk>
+  handler: (
+    messages: Message[],
+    config: ChatConfig,
+    signal: AbortSignal
+  ) => AsyncIterable<StreamChunk>
 ): StreamAdapter {
   let abortCtrl: AbortController | null = null
+
   return {
     name: 'custom',
-    abort() { abortCtrl?.abort() },
-    stream(messages: Message[], config: ChatConfig) {
-      abortCtrl = new AbortController()
-      return handler(messages, config, abortCtrl.signal)
+    abort() {
+      abortCtrl?.abort()
+    },
+    async *stream(
+      messages: Message[],
+      config: ChatConfig,
+      signal?: AbortSignal
+    ): AsyncIterable<StreamChunk> {
+      const request = createRequestAbortController(signal)
+      abortCtrl = request.controller
+
+      try {
+        for await (const chunk of handler(messages, config, request.controller.signal)) {
+          if (request.controller.signal.aborted) return
+          yield chunk
+        }
+      } catch (err: unknown) {
+        if (request.controller.signal.aborted || isAbortError(err)) return
+        yield {
+          type: 'error',
+          error: err instanceof Error ? err.message : '自定义适配器请求异常',
+        }
+      } finally {
+        request.cleanup()
+        if (abortCtrl === request.controller) abortCtrl = null
+      }
     },
   }
 }
 
-// --- AI SDK Adapter (Vercel AI SDK compatible) ---
 export function createAISDKAdapter(options: {
   endpoint: string
   headers?: Record<string, string>
 }): StreamAdapter {
+  let abortCtrl: AbortController | null = null
+
   return {
     name: 'ai-sdk',
-    async *stream(messages: Message[], config: ChatConfig): AsyncIterable<StreamChunk> {
-      const response = await fetch(options.endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...options.headers },
-        body: JSON.stringify({ messages: messagesToOpenAI(messages, config), config }),
-      })
+    abort() {
+      abortCtrl?.abort()
+    },
+    async *stream(
+      messages: Message[],
+      config: ChatConfig,
+      signal?: AbortSignal
+    ): AsyncIterable<StreamChunk> {
+      const request = createRequestAbortController(signal)
+      abortCtrl = request.controller
 
-      if (!response.ok) {
-        yield { type: 'error', error: 'API error' }
-        return
-      }
+      try {
+        const response = await fetch(options.endpoint, {
+          method: 'POST',
+          signal: request.controller.signal,
+          headers: { 'Content-Type': 'application/json', ...options.headers },
+          body: JSON.stringify({ messages: messagesToOpenAI(messages, config), config }),
+        })
 
-      const reader = response.body!.getReader()
-      const decoder = new TextDecoder()
+        if (!response.ok) {
+          yield { type: 'error', error: await readErrorMessage(response, 'AI SDK 请求失败') }
+          return
+        }
 
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        const text = decoder.decode(value)
-        // Vercel AI SDK uses "0:" prefix for text
-        for (const line of text.split('\n').filter(Boolean)) {
-          if (line.startsWith('0:')) {
-            try {
-              const content = JSON.parse(line.slice(2))
+        for await (const line of parseTextLines(response)) {
+          if (request.controller.signal.aborted) return
+          const trimmed = line.trim()
+          if (!trimmed || !trimmed.startsWith('0:')) continue
+
+          try {
+            const content = JSON.parse(trimmed.slice(2)) as unknown
+            if (typeof content === 'string') {
               yield { type: 'text', content }
-            } catch { /* skip */ }
+            }
+          } catch (err: unknown) {
+            const reason = err instanceof Error ? err.message : '未知解析错误'
+            yield { type: 'error', error: `AI SDK 流式响应解析失败：${reason}` }
+            return
           }
         }
+
+        yield { type: 'done' }
+      } catch (err: unknown) {
+        if (request.controller.signal.aborted || isAbortError(err)) return
+        yield {
+          type: 'error',
+          error: err instanceof Error ? err.message : 'AI SDK 请求异常',
+        }
+      } finally {
+        request.cleanup()
+        if (abortCtrl === request.controller) abortCtrl = null
       }
-      yield { type: 'done' }
     },
   }
 }

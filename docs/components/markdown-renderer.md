@@ -5,7 +5,7 @@ import source from '../examples/markdown-renderer/Basic.vue?raw'
 
 # MarkdownRenderer
 
-`MarkdownRenderer` 渲染助手消息中的 Markdown 内容。
+`MarkdownRenderer` 使用 `marked` 渲染助手消息中的 Markdown 内容，并通过 DOMPurify 净化输出。
 
 ## 导入方式
 
@@ -28,6 +28,6 @@ import source from '../examples/markdown-renderer/Basic.vue?raw'
 
 ## 注意事项
 
-默认会转义 HTML。若业务允许 HTML，需要自行评估 XSS 风险。
+默认会转义原始 HTML，并过滤危险链接协议。若业务允许 HTML，需要自行评估 XSS 风险。
 
 当 `isStreaming=true` 时，组件会按 `debounceMs` 合并多次内容更新，减少高频 token 到来时的 Markdown 解析次数。流式结束或 `isStreaming=false` 时会立即解析当前完整内容。需要逐 token 调试时可将 `debounceMs` 设为 `0`。

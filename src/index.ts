@@ -91,6 +91,7 @@ export { useChat, provideChat } from './composables/useChat'
 export { useStream } from './composables/useStream'
 export { useConversation } from './composables/useConversation'
 export { useToolCall, useArtifact } from './composables/useToolCall'
+export { parseNdjson, parseSSE, parseTextLines } from './utils/streamParsers'
 
 export {
   createOpenAIAdapter,

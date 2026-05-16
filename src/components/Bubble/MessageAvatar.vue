@@ -1,4 +1,3 @@
-<!-- MessageAvatar.vue -->
 <script setup lang="ts">
 import type { MessageRole } from '../../types'
 
@@ -24,7 +23,7 @@ defineProps<{ role: MessageRole; src?: string; name?: string }>()
       v-else
       class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 text-xs"
     >
-      🔧
+      T
     </div>
   </div>
 </template>

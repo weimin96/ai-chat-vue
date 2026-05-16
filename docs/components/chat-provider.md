@@ -47,7 +47,7 @@ import source from '../examples/chat-provider/Basic.vue?raw'
 | `theme`             | `'light' \| 'dark' \| 'auto'`                      | 由样式变量决定                 | 主题模式                 |
 | `density`           | `'compact' \| 'default' \| 'comfortable'`          | 组件默认间距                   | 信息密度                 |
 
-`ChatConfig` 会原样传给 `StreamAdapter.stream(messages, config)`。组件只消费与自身相关的开关，模型、系统提示词、采样参数等由适配器决定如何映射到后端请求。
+`ChatConfig` 会原样传给 `StreamAdapter.stream(messages, config, signal?)`。组件只消费与自身相关的开关，模型、系统提示词、采样参数等由适配器决定如何映射到后端请求。
 
 ## 持久化
 
@@ -68,6 +68,8 @@ const persistence = createLocalStoragePersistence({
 ```
 
 `ChatPersistenceAdapter` 只要求实现 `load()` 和 `save(conversations)`，可替换为 IndexedDB、远程接口或业务自己的加密存储。需要懒加载消息时，可额外实现 `loadMessages(conversationId)`。`useChat()` 会暴露 `isPersistenceReady`、`persistenceError`、`isLoadingMessages` 和 `messageLoadError`，用于展示加载状态和失败路径。
+
+`createLocalStoragePersistence()` 在 SSR 或预渲染阶段不会访问全局 `localStorage`，没有可用 Storage 时返回空会话。需要使用 `sessionStorage` 或测试替身时，可以传入 `storage`。
 
 ## 注意事项
 

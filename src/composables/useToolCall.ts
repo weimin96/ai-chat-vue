@@ -1,6 +1,3 @@
-// ============================================================
-// useToolCall
-// ============================================================
 import { ref } from 'vue'
 import type { ToolCall } from '../types'
 
@@ -18,10 +15,10 @@ export function useToolCall() {
 
   function statusIcon(status: ToolCall['status']) {
     return {
-      pending: '⏳',
-      running: '⚙️',
-      success: '✅',
-      error: '❌',
+      pending: '待',
+      running: '中',
+      success: '成',
+      error: '错',
     }[status]
   }
 
@@ -37,9 +34,6 @@ export function useToolCall() {
   return { expandedTools, toggle, isExpanded, statusIcon, statusColor }
 }
 
-// ============================================================
-// useArtifact
-// ============================================================
 import type { Artifact, ArtifactType } from '../types'
 
 export function useArtifact() {

@@ -15,6 +15,14 @@ import source from '../examples/chat-container/Basic.vue?raw'
 
 <PackageTabs />
 
+## 可选依赖
+
+Mermaid 图表和 Shiki 代码高亮按需加载。使用对应能力时安装可选依赖：
+
+```powershell
+npm install mermaid shiki
+```
+
 ## 引入样式
 
 ```ts
@@ -57,3 +65,5 @@ createApp(App).use(AiChatVue).mount('#app')
 ## 适配器
 
 `ChatProvider` 接收 `StreamAdapter`。生产环境应显式传入适配器，否则发送消息不会产生助手回复。
+
+真实模型服务密钥只应保存在服务端。浏览器端建议调用 `/api/chat` 等业务代理接口，不要把 `VITE_OPENAI_KEY` 或 `sk-` 密钥写进前端构建产物。

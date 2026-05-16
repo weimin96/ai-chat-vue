@@ -145,6 +145,10 @@ function createChatState(
     void persistConversations()
   }
 
+  function isAbortError(err: unknown) {
+    return err instanceof DOMException && err.name === 'AbortError'
+  }
+
   async function sendMessage(content: string) {
     if (!adapter || isGenerating.value) return
     if (!activeId.value) createConversation()
@@ -161,11 +165,12 @@ function createChatState(
     abortController.value = new AbortController()
 
     try {
-      const stream = adapter.stream(messages.value, config)
+      const signal = abortController.value.signal
+      const stream = adapter.stream(messages.value, config, signal)
       let accText = ''
 
       for await (const chunk of stream) {
-        if (abortController.value?.signal.aborted) break
+        if (signal.aborted) break
         if (chunk.type === 'error') {
           updateMessage(assistantMsg.id, {
             isError: true,
@@ -179,6 +184,10 @@ function createChatState(
         if (chunk.type === 'text' && chunk.content) accText += chunk.content
       }
     } catch (err: unknown) {
+      if (isAbortError(err) || abortController.value?.signal.aborted) {
+        return
+      }
+
       updateMessage(assistantMsg.id, {
         isError: true,
         isStreaming: false,
@@ -243,6 +252,7 @@ function createChatState(
 
   function stopGeneration() {
     abortController.value?.abort()
+    adapter?.abort?.()
     isGenerating.value = false
     void persistConversations()
   }

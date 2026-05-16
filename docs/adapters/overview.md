@@ -2,13 +2,27 @@
 
 适配器把组件库的消息与配置转换为模型服务请求，并以 `StreamChunk` 形式返回流式结果。
 
+## 生产代理
+
+```ts
+import { createAISDKAdapter } from '@weimin96/ai-chat-vue'
+
+const adapter = createAISDKAdapter({
+  endpoint: '/api/chat',
+})
+```
+
+真实密钥不应放进浏览器 bundle。生产环境建议前端只调用自有后端代理，并在代理里读取 `OPENAI_API_KEY` 后请求 OpenAI 兼容接口。
+
 ## OpenAI 兼容接口
+
+`createOpenAIAdapter` 会把 `apiKey` 写入 `Authorization` 请求头。它适合服务端、测试环境或受控兼容接口，不建议在浏览器端承载真实模型服务密钥。
 
 ```ts
 import { createOpenAIAdapter } from '@weimin96/ai-chat-vue'
 
 const adapter = createOpenAIAdapter({
-  apiKey: '由服务端代理注入',
+  apiKey: process.env.OPENAI_API_KEY ?? '',
   baseURL: 'https://api.openai.com/v1',
   model: 'gpt-4o',
 })
@@ -19,8 +33,6 @@ const adapter = createOpenAIAdapter({
 | `apiKey` | `string` | 必填 | OpenAI 兼容接口密钥 |
 | `baseURL` | `string` | `https://api.openai.com/v1` | API 根地址 |
 | `model` | `string` | `gpt-4o` | 默认模型 |
-
-真实密钥不应放进浏览器 bundle。生产环境建议使用自定义后端代理，并在代理里调用 OpenAI 兼容接口。
 
 `config.systemPrompt` 会作为第一条 `system` 消息注入请求。
 

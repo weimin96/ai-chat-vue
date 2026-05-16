@@ -37,8 +37,8 @@ export default defineConfig({
       },
     },
     cssCodeSplit: false,
-    sourcemap: false,
-    minify: false,
+    sourcemap: true,
+    minify: 'esbuild',
   },
   resolve: {
     alias: { '@': resolve(__dirname, 'src') },

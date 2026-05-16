@@ -7,10 +7,10 @@ const props = defineProps<{ toolCall: ToolCall }>()
 const expanded = ref(false)
 
 const statusConfig = computed(() => ({
-  pending: { icon: '⏳', color: 'text-slate-400', bg: 'bg-slate-50', border: 'border-slate-200' },
-  running: { icon: '⚙️', color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-200' },
-  success: { icon: '✅', color: 'text-emerald-500', bg: 'bg-emerald-50', border: 'border-emerald-200' },
-  error: { icon: '❌', color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-200' },
+  pending: { icon: '待', color: 'text-slate-400', bg: 'bg-slate-50', border: 'border-slate-200' },
+  running: { icon: '中', color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-200' },
+  success: { icon: '成', color: 'text-emerald-500', bg: 'bg-emerald-50', border: 'border-emerald-200' },
+  error: { icon: '错', color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-200' },
 }[props.toolCall.status]))
 
 function formatArg(val: unknown): string {
@@ -30,7 +30,6 @@ function formatArg(val: unknown): string {
       <span class="text-sm">{{ statusConfig.icon }}</span>
       <span :class="`font-mono ${statusConfig.color}`">{{ toolCall.name }}</span>
 
-      <!-- Running spinner -->
       <svg v-if="toolCall.status === 'running'" class="w-3 h-3 animate-spin text-blue-500 ml-0.5" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
@@ -44,9 +43,8 @@ function formatArg(val: unknown): string {
 
     <Transition name="slide">
       <div v-if="expanded" :id="`tool-call-panel-${toolCall.id}`" class="px-3 pb-3 space-y-2">
-        <!-- Arguments -->
         <div v-if="Object.keys(toolCall.arguments).length">
-          <p class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1">Arguments</p>
+          <p class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1">参数</p>
           <div class="space-y-1">
             <div v-for="(val, key) in toolCall.arguments" :key="key" class="flex gap-2 text-xs">
               <span class="font-mono text-slate-500 flex-shrink-0">{{ key }}:</span>
@@ -55,13 +53,11 @@ function formatArg(val: unknown): string {
           </div>
         </div>
 
-        <!-- Result -->
         <div v-if="toolCall.result !== undefined">
-          <p class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1">Result</p>
+          <p class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1">结果</p>
           <pre class="text-xs bg-white/60 rounded p-2 overflow-x-auto text-slate-700 font-mono">{{ typeof toolCall.result === 'string' ? toolCall.result : JSON.stringify(toolCall.result, null, 2) }}</pre>
         </div>
 
-        <!-- Error -->
         <div v-if="toolCall.error" class="text-xs text-red-600 bg-red-100 rounded p-2 font-mono">
           {{ toolCall.error }}
         </div>

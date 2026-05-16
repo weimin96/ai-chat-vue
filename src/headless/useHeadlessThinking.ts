@@ -1,4 +1,4 @@
-import { computed, reactive, readonly, ref, watchEffect, type ComputedRef, type Ref } from 'vue'
+import { computed, onBeforeUnmount, reactive, readonly, ref, watchEffect, type ComputedRef, type Ref } from 'vue'
 import type { ThinkingStep } from '../types'
 
 export interface UseHeadlessThinkingOptions {
@@ -145,6 +145,7 @@ import type { Artifact, ArtifactType } from '../types'
 
 export interface UseHeadlessArtifactOptions {
   artifact: Artifact
+  enableUnsafeHtmlPreview?: boolean
   onUpdate?: (content: string) => void
 }
 
@@ -180,7 +181,7 @@ export interface UseHeadlessArtifactReturn {
 }
 
 export function useHeadlessArtifact(options: UseHeadlessArtifactOptions): UseHeadlessArtifactReturn {
-  const { artifact, onUpdate } = options
+  const { artifact, enableUnsafeHtmlPreview = false, onUpdate } = options
 
   const activeTab = ref<ArtifactTab>('preview')
   const isFullscreen = ref(false)
@@ -195,12 +196,21 @@ export function useHeadlessArtifact(options: UseHeadlessArtifactOptions): UseHea
   const exitFullscreen   = () => { isFullscreen.value = false }
 
   let _blobUrl: string | null = null
+  function revokeBlobUrl() {
+    if (!_blobUrl) return
+    URL.revokeObjectURL(_blobUrl)
+    _blobUrl = null
+  }
+
   const blobUrl = computed<string | null>(() => {
-    if (artifact.type !== 'html') return null
-    if (_blobUrl) URL.revokeObjectURL(_blobUrl)
+    if (artifact.type !== 'html' || !enableUnsafeHtmlPreview) return null
+    if (typeof window === 'undefined' || !URL.createObjectURL) return null
+    revokeBlobUrl()
     _blobUrl = URL.createObjectURL(new Blob([artifact.content], { type: 'text/html' }))
     return _blobUrl
   })
+
+  onBeforeUnmount(revokeBlobUrl)
 
   const langMap: Record<ArtifactType, string> = {
     html: 'html', vue: 'vue', markdown: 'markdown',
@@ -213,7 +223,11 @@ export function useHeadlessArtifact(options: UseHeadlessArtifactOptions): UseHea
 
   const language  = computed(() => langMap[artifact.type])
   const typeLabel = computed(() => labelMap[artifact.type])
-  const canPreview = computed(() => ['html', 'markdown', 'json'].includes(artifact.type))
+  const canPreview = computed(() =>
+    artifact.type === 'html'
+      ? enableUnsafeHtmlPreview
+      : ['markdown', 'json'].includes(artifact.type)
+  )
   const hasHistory = computed(() => artifact.history.length > 0)
 
   function updateContent(content: string) {
@@ -229,7 +243,7 @@ export function useHeadlessArtifact(options: UseHeadlessArtifactOptions): UseHea
   }
 
   async function copySource() {
-    await navigator.clipboard.writeText(artifact.content).catch(() => {})
+    await navigator.clipboard.writeText(artifact.content)
     hasCopied.value = true
     setTimeout(() => { hasCopied.value = false }, 2000)
   }
@@ -267,7 +281,8 @@ export function useHeadlessArtifact(options: UseHeadlessArtifactOptions): UseHea
   }))
 
   const iframeAttrs: Record<string, string> = {
-    sandbox: 'allow-scripts allow-same-origin',
+    sandbox: 'allow-scripts',
+    referrerpolicy: 'no-referrer',
     title: artifact.title,
     loading: 'lazy',
   }
@@ -381,7 +396,7 @@ export function useHeadlessCodeBlock(options: UseHeadlessCodeBlockOptions): UseH
   const toggle = () => { if (collapsible) isCollapsed.value = !isCollapsed.value }
 
   async function copy() {
-    await navigator.clipboard.writeText(code).catch(() => {})
+    await navigator.clipboard.writeText(code)
     hasCopied.value = true
     setTimeout(() => { hasCopied.value = false }, 2000)
   }

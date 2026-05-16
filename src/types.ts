@@ -88,7 +88,7 @@ export interface ChatConfig {
 
 export interface StreamAdapter {
   name: string
-  stream(messages: Message[], config: ChatConfig): AsyncIterable<StreamChunk>
+  stream(messages: Message[], config: ChatConfig, signal?: AbortSignal): AsyncIterable<StreamChunk>
   abort?(): void
 }
 

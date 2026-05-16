@@ -2,6 +2,24 @@ import type { ChatPersistenceAdapter, Conversation } from './types'
 
 export interface LocalStoragePersistenceOptions {
   key?: string
+  storage?: Storage | null
+}
+
+function getStorage(storage?: Storage | null): Storage | null {
+  if (storage !== undefined) return storage
+  if (typeof window === 'undefined') return null
+
+  try {
+    return window.localStorage
+  } catch {
+    return null
+  }
+}
+
+function createPersistenceError(message: string, cause: unknown) {
+  const error = new Error(message) as Error & { cause?: unknown }
+  error.cause = cause
+  return error
 }
 
 export function createLocalStoragePersistence(
@@ -11,18 +29,34 @@ export function createLocalStoragePersistence(
 
   return {
     load() {
-      const raw = localStorage.getItem(key)
-      if (!raw) return []
+      const storage = getStorage(options.storage)
+      if (!storage) return []
 
-      const parsed: unknown = JSON.parse(raw)
-      if (!Array.isArray(parsed)) {
-        throw new Error('持久化数据格式无效')
+      let raw: string | null
+      try {
+        raw = storage.getItem(key)
+      } catch (err: unknown) {
+        throw createPersistenceError('读取本地持久化失败', err)
       }
 
-      return parsed as Conversation[]
+      if (!raw) return []
+
+      try {
+        const parsed: unknown = JSON.parse(raw)
+        return Array.isArray(parsed) ? parsed as Conversation[] : []
+      } catch {
+        return []
+      }
     },
     save(conversations) {
-      localStorage.setItem(key, JSON.stringify(conversations))
+      const storage = getStorage(options.storage)
+      if (!storage) return
+
+      try {
+        storage.setItem(key, JSON.stringify(conversations))
+      } catch (err: unknown) {
+        throw createPersistenceError('保存本地持久化失败', err)
+      }
     },
   }
 }

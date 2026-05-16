@@ -26,7 +26,7 @@ import type { StreamAdapter } from '@weimin96/ai-chat-vue'
 
 const adapter: StreamAdapter = {
   name: 'custom',
-  async *stream(_messages, _config) {
+  async *stream(_messages, _config, _signal) {
     yield { type: 'text', content: '你好，这是来自适配器的回复。' }
     yield { type: 'done' }
   },

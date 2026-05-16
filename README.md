@@ -16,9 +16,9 @@
 | 消息 | 用户、助手、系统、工具角色，支持重试、编辑、删除和反馈 |
 | 思考过程 | 可折叠推理面板和步骤展示 |
 | 工具调用 | 参数、结果、状态和耗时展示 |
-| 产物 | HTML 沙箱预览、Vue SFC、Markdown、JSON、Mermaid、版本历史 |
-| Markdown | 基础 Markdown、代码块、引用、任务列表、安全链接 |
-| 代码块 | 复制、折叠、文件名、行号 |
+| 产物 | HTML 源码展示、显式开启后的沙箱预览、Vue SFC、Markdown、JSON、Mermaid、版本历史 |
+| Markdown | GFM、表格、代码块、引用、任务列表、安全链接 |
+| 代码块 | Shiki 高亮、复制、折叠、文件名、行号 |
 | 会话 | 列表、搜索、置顶、归档、重命名、删除、导出 |
 | 输入 | 多行输入、快捷键、附件、图片粘贴、语音、建议项 |
 | 主题 | CSS 变量、暗色模式、密度配置 |
@@ -48,7 +48,7 @@ export default {
 import '@weimin96/ai-chat-vue/styles'
 ```
 
-Mermaid 和 Shiki 是可选 peer 依赖。只有使用 Mermaid 图表或自行接入 Shiki 高亮时才需要安装：
+Mermaid 和 Shiki 是可选 peer 依赖。使用 Mermaid 图表或需要 `CodeBlock` 高亮时安装：
 
 ```bash
 npm install mermaid shiki
@@ -109,6 +109,16 @@ const adapter = createCustomAdapter(async function* (messages, config, signal) {
 ```
 
 真实 API Key 必须只放在服务端。前端通过 `/api/chat` 等后端代理接口调用模型服务，不要把 `VITE_OPENAI_KEY` 或 `sk-` 密钥写进浏览器 bundle。
+
+## 安全边界
+
+| 范围 | 默认行为 | 生产建议 |
+|------|----------|----------|
+| API Key | 快速开始只调用 `/api/chat` 代理 | 密钥只保存在服务端或 Edge Function，浏览器端不写真实模型服务密钥 |
+| HTML Artifact | 默认只展示源码，不执行预览 | 只有在确认内容可信时才传入 `enableUnsafeHtmlPreview` |
+| iframe | 启用 HTML 预览后使用 `sandbox="allow-scripts"` 与 `referrerpolicy="no-referrer"` | 不为模型输出开启 `allow-same-origin` |
+| Markdown | 通过 `marked` 解析后使用 DOMPurify 净化 | `allowHtml` 只用于受控内容 |
+| 文件与附件 | 组件只提供入口和展示 | 上传、扫描、鉴权和存储由业务后端处理 |
 
 ## 主题
 
@@ -220,6 +230,8 @@ const adapter = createCustomAdapter(async function* (messages, config, signal) {
 
 `signal` 来自内部 `AbortController`，停止生成时会触发中断。自定义适配器中应把它传给 `fetch` 或其它可取消的请求实现。
 
+`StreamAdapter.stream` 的完整签名为 `stream(messages, config, signal?)`。内置 OpenAI、Ollama、AI SDK 和自定义适配器都会接收同一个中断信号，`stopGeneration()` 也会调用适配器的 `abort()`。
+
 `StreamChunk` 支持 `text`、`thinking`、`tool_call`、`tool_result`、`artifact`、`error`、`done`。中途失败时优先 `yield { type: 'error', error: '错误信息' }`，再结束生成。
 
 当前没有内置断线重连机制，SSE 或网络中断后的重试策略由业务侧适配器负责。
@@ -283,6 +295,15 @@ const adapter = createCustomAdapter(async function* (messages, config, signal) {
 
 `BubbleList` 当前没有透传 `onEdit`。如需编辑消息，需要直接组合 `Bubble` 或使用 Headless API。
 
+### `<ArtifactPanel>`
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `artifact` | `Artifact` | 必填 | Artifact 对象 |
+| `enableUnsafeHtmlPreview` | `boolean` | `false` | 是否允许 HTML Artifact 生成 iframe 预览 |
+
+HTML 预览默认关闭，面板会直接展示源码。开启后组件会创建 Blob URL，并在内容更新或卸载时回收。
+
 ### `useChat()` composable
 ```ts
 const {
@@ -301,7 +322,7 @@ const {
 
 `addMessage` 和 `updateMessage` 会直接写入当前活动会话。流式回复期间，内部也会持续调用 `updateMessage` 追加助手内容；外部若同时更新同一条助手消息，应合并已有字段后再写入，避免覆盖流式内容。当前状态保存在内存中，刷新页面后不会自动恢复。
 
-## 📁 Project Structure
+## 项目结构
 
 ```
 @weimin96/ai-chat-vue
@@ -317,17 +338,17 @@ const {
 │  ├─ Artifact/      ArtifactPanel
 │  └─ Mermaid/       MermaidBlock
 ├─ composables/
-│  ├─ useChat        Core state management
-│  ├─ useStream      SSE / streaming utilities
-│  ├─ useConversation Conversation CRUD
-│  ├─ useToolCall    Tool call state
-│  └─ useArtifact   Artifact rendering
+│  ├─ useChat        核心会话状态
+│  ├─ useStream      流式工具
+│  ├─ useConversation 会话增删改查
+│  ├─ useToolCall    工具调用状态
+│  └─ useArtifact    Artifact 渲染状态
 ├─ adapters/
-│  ├─ openai         OpenAI / compatible APIs
-│  ├─ ollama         Ollama local models
+│  ├─ openai         OpenAI 兼容接口
+│  ├─ ollama         Ollama 本地模型
 │  ├─ ai-sdk         Vercel AI SDK
-│  └─ custom         DIY adapter factory
-└─ types.ts          Full TypeScript types
+│  └─ custom         自定义适配器工厂
+└─ types.ts          TypeScript 类型
 ```
 
 ## License
@@ -542,7 +563,7 @@ Return：
 | `activeTab` | `Ref<'preview'\|'source'>` | 当前标签 |
 | `isPreview / isSource` | `ComputedRef<boolean>` | 标签状态 |
 | `isFullscreen` | `Readonly<Ref<boolean>>` | 全屏状态 |
-| `blobUrl` | `ComputedRef<string\|null>` | HTML 预览地址 |
+| `blobUrl` | `ComputedRef<string\|null>` | 仅在显式允许 HTML 预览时返回地址 |
 | `language / typeLabel / canPreview` | `ComputedRef<string\|boolean>` | 内容元信息 |
 | `setTab / toggleFullscreen / updateContent / restoreVersion` | functions | 产物操作 |
 | `copySource() / hasCopied` | function + state | 复制源码 |
@@ -557,14 +578,38 @@ Return：
 | `toggle / copy / run` | functions | 代码块操作 |
 | `toggleAttrs / copyButtonAttrs / preAttrs` | objects | ARIA 属性 |
 
+## SSR 与持久化
+
+`createLocalStoragePersistence()` 会在非浏览器环境返回空会话，不会直接访问全局 `localStorage`。需要使用 `sessionStorage`、加密存储或测试替身时，可以注入外部 Storage：
+
+```ts
+const persistence = createLocalStoragePersistence({
+  key: 'demo:conversations',
+  storage: sessionStorage,
+})
+```
+
+VitePress、Nuxt 预渲染或服务端渲染场景中，应只在客户端挂载需要浏览器能力的组件，例如语音、剪贴板、HTML 预览和本地存储。
+
+## 能力矩阵
+
+| 能力 | 状态 | 说明 |
+|------|------|------|
+| Markdown GFM | stable | 使用 `marked` + DOMPurify，支持表格、任务列表和安全链接 |
+| 流式中断 | stable | `AbortSignal` 传入适配器，并兼容 `adapter.abort()` |
+| HTML Artifact 预览 | preview | 默认关闭，显式开启后使用受限 sandbox |
+| CodeBlock Shiki | preview | 按需加载 Shiki，加载失败时回退纯文本 |
+| Mermaid | preview | 按需动态导入，需要安装可选 peer 依赖 |
+| localStorage 持久化 | stable | 支持 SSR 保护和外部 Storage 注入 |
+
 ## 已知限制
 
 | 范围 | 当前行为 |
 |------|----------|
-| 持久化 | 会话和消息只保存在内存中，库内暂未提供 localStorage 或 IndexedDB 适配器 |
+| 持久化 | 仅内置 localStorage 适配器；IndexedDB、远程存储和加密存储由业务侧实现 |
 | 长列表性能 | `BubbleList` 当前全量渲染消息，没有内置虚拟滚动 |
 | 流式重连 | 网络中断后不自动重连，重试策略由适配器或业务层实现 |
 | Mermaid | `MermaidBlock` 按需动态导入 `mermaid`，只在安装可选 peer 依赖后可用 |
-| Shiki | 当前默认代码块不使用 Shiki，高亮能力需业务侧自行接入 |
-| HTML 预览 | iframe sandbox 策略由组件内部控制，尚未公开白名单配置 |
+| Shiki | `CodeBlock` 会按需加载 Shiki；未安装依赖或加载失败时回退纯文本 |
+| HTML 预览 | 默认不执行 HTML Artifact，需显式传入 `enableUnsafeHtmlPreview` |
 | DOMPurify | Markdown 输出已净化，暂未公开 DOMPurify 自定义配置入口 |
