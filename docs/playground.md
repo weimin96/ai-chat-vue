@@ -7,6 +7,8 @@
 
 `play/` 不要求为每个组件都建立独立示例。公开组件的基础用法放在 `docs/examples/`，`play/` 只保留能帮助开发调试的场景，例如完整聊天、消息状态、输入区状态和独立渲染切片。
 
+持久化会话场景复用 `createLocalStoragePersistence` 与 `ChatProvider.persistence`。发送消息后刷新页面，可验证会话从 `localStorage` 恢复；场景内提供本地数据清空入口。
+
 启动本地调试：
 
 ```powershell

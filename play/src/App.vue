@@ -5,10 +5,12 @@ import {
   BubbleList,
   ChatContainer,
   ChatProvider,
+  ConversationList,
   MarkdownRenderer,
   Sender,
   Thinking,
   ToolCallCard,
+  createLocalStoragePersistence,
   type Artifact,
   type Message,
   type StreamAdapter,
@@ -16,8 +18,9 @@ import {
   type ThinkingStep,
   type ToolCall,
 } from '@weimin96/ai-chat-vue'
+import PersistenceStatus from './PersistenceStatus.vue'
 
-type ScenarioId = 'chat' | 'messages' | 'sender' | 'standalone'
+type ScenarioId = 'chat' | 'persistence' | 'messages' | 'sender' | 'standalone'
 
 interface Scenario {
   id: ScenarioId
@@ -35,11 +38,20 @@ const playConfig = {
   locale: 'zh-CN' as const,
 }
 
+const persistenceStorageKey = 'ai-chat-vue:playground:persistence'
+const playPersistence = createLocalStoragePersistence({ key: persistenceStorageKey })
+
 const scenarios: Scenario[] = [
   {
     id: 'chat',
     title: '完整聊天',
     description: '验证容器、欢迎区、发送区、流式回复与滚动行为。',
+    group: '组合场景',
+  },
+  {
+    id: 'persistence',
+    title: '持久化会话',
+    description: '验证刷新页面后，会话和消息仍从 localStorage 恢复。',
     group: '组合场景',
   },
   {
@@ -62,7 +74,8 @@ const scenarios: Scenario[] = [
   },
 ]
 
-const activeScenarioId = ref<ScenarioId>('chat')
+const scenarioIds = scenarios.map((scenario) => scenario.id)
+const activeScenarioId = ref<ScenarioId>(getInitialScenarioId())
 const senderEvents = ref<string[]>(['等待输入区交互'])
 
 const scenarioGroups = computed(() => {
@@ -263,6 +276,12 @@ function delay(milliseconds: number) {
 
 function selectScenario(id: ScenarioId) {
   activeScenarioId.value = id
+  window.location.hash = id
+}
+
+function getInitialScenarioId(): ScenarioId {
+  const hash = window.location.hash.slice(1)
+  return scenarioIds.includes(hash as ScenarioId) ? hash as ScenarioId : 'chat'
 }
 
 function recordSenderSend(content: string) {
@@ -332,6 +351,33 @@ function recordSenderStop() {
           </ChatProvider>
         </div>
 
+        <div v-else-if="activeScenarioId === 'persistence'" class="play-preview-frame play-persistence-frame">
+          <ChatProvider
+            :config="playConfig"
+            :adapter="playAdapter"
+            :persistence="playPersistence"
+          >
+            <div class="play-persistence-layout">
+              <aside class="play-persistence-list" aria-label="持久化会话列表">
+                <ConversationList empty-text="暂无持久化会话" />
+              </aside>
+              <section class="play-persistence-chat">
+                <PersistenceStatus :storage-key="persistenceStorageKey" />
+                <ChatContainer
+                  welcome-title="持久化会话验证"
+                  welcome-subtitle="发送消息后刷新页面，当前会话会从 localStorage 恢复。"
+                  :prompt-cards="promptCards"
+                  :suggestions="suggestions"
+                  placeholder="输入一条会保留的消息"
+                  enable-markdown
+                >
+                  <template #footer>存储 key：{{ persistenceStorageKey }}</template>
+                </ChatContainer>
+              </section>
+            </div>
+          </ChatProvider>
+        </div>
+
         <div v-else-if="activeScenarioId === 'messages'" class="play-preview-frame play-message-frame">
           <BubbleList :messages="sampleMessages" enable-markdown />
         </div>
@@ -369,7 +415,7 @@ function recordSenderStop() {
           </section>
         </div>
 
-        <div v-else class="play-preview-grid">
+        <div v-else-if="activeScenarioId === 'standalone'" class="play-preview-grid">
           <section class="play-panel">
             <h3>Markdown</h3>
             <MarkdownRenderer :content="markdownSample" />
