@@ -34,30 +34,19 @@ function messagesToOpenAI(messages: Message[], config: ChatConfig) {
   ]
 }
 
-function createRequestAbortController(signal?: AbortSignal) {
+function createRequestCancellation(signal?: AbortSignal) {
+  if (signal) {
+    return {
+      signal,
+      controller: null,
+    }
+  }
+
   const controller = new AbortController()
 
-  if (!signal) {
-    return {
-      controller,
-      cleanup: () => {},
-    }
-  }
-
-  if (signal.aborted) {
-    controller.abort()
-    return {
-      controller,
-      cleanup: () => {},
-    }
-  }
-
-  const abort = () => controller.abort()
-  signal.addEventListener('abort', abort, { once: true })
-
   return {
+    signal: controller.signal,
     controller,
-    cleanup: () => signal.removeEventListener('abort', abort),
   }
 }
 
@@ -110,13 +99,13 @@ export function createOpenAIAdapter(options: {
       config: ChatConfig,
       signal?: AbortSignal
     ): AsyncIterable<StreamChunk> {
-      const request = createRequestAbortController(signal)
+      const request = createRequestCancellation(signal)
       abortCtrl = request.controller
 
       try {
         const response = await fetch(`${baseURL}/chat/completions`, {
           method: 'POST',
-          signal: request.controller.signal,
+          signal: request.signal,
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${apiKey}`,
@@ -141,7 +130,7 @@ export function createOpenAIAdapter(options: {
         }
 
         for await (const data of parseSSE(response)) {
-          if (request.controller.signal.aborted) return
+          if (request.signal.aborted) return
           if (!data) continue
           if (data === '[DONE]') {
             yield { type: 'done' }
@@ -171,13 +160,12 @@ export function createOpenAIAdapter(options: {
 
         yield { type: 'done' }
       } catch (err: unknown) {
-        if (request.controller.signal.aborted || isAbortError(err)) return
+        if (request.signal.aborted || isAbortError(err)) return
         yield {
           type: 'error',
           error: err instanceof Error ? err.message : 'OpenAI 请求异常',
         }
       } finally {
-        request.cleanup()
         if (abortCtrl === request.controller) abortCtrl = null
       }
     },
@@ -201,13 +189,13 @@ export function createOllamaAdapter(options: {
       config: ChatConfig,
       signal?: AbortSignal
     ): AsyncIterable<StreamChunk> {
-      const request = createRequestAbortController(signal)
+      const request = createRequestCancellation(signal)
       abortCtrl = request.controller
 
       try {
         const response = await fetch(`${baseURL}/api/chat`, {
           method: 'POST',
-          signal: request.controller.signal,
+          signal: request.signal,
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             model: config.model ?? model,
@@ -222,7 +210,7 @@ export function createOllamaAdapter(options: {
         }
 
         for await (const json of parseNdjson<OllamaStreamChunk>(response)) {
-          if (request.controller.signal.aborted) return
+          if (request.signal.aborted) return
           if (json.message?.content) yield { type: 'text', content: json.message.content }
           if (json.done) {
             yield { type: 'done' }
@@ -232,13 +220,12 @@ export function createOllamaAdapter(options: {
 
         yield { type: 'done' }
       } catch (err: unknown) {
-        if (request.controller.signal.aborted || isAbortError(err)) return
+        if (request.signal.aborted || isAbortError(err)) return
         yield {
           type: 'error',
           error: err instanceof Error ? err.message : 'Ollama 请求异常',
         }
       } finally {
-        request.cleanup()
         if (abortCtrl === request.controller) abortCtrl = null
       }
     },
@@ -264,22 +251,21 @@ export function createCustomAdapter(
       config: ChatConfig,
       signal?: AbortSignal
     ): AsyncIterable<StreamChunk> {
-      const request = createRequestAbortController(signal)
+      const request = createRequestCancellation(signal)
       abortCtrl = request.controller
 
       try {
-        for await (const chunk of handler(messages, config, request.controller.signal)) {
-          if (request.controller.signal.aborted) return
+        for await (const chunk of handler(messages, config, request.signal)) {
+          if (request.signal.aborted) return
           yield chunk
         }
       } catch (err: unknown) {
-        if (request.controller.signal.aborted || isAbortError(err)) return
+        if (request.signal.aborted || isAbortError(err)) return
         yield {
           type: 'error',
           error: err instanceof Error ? err.message : '自定义适配器请求异常',
         }
       } finally {
-        request.cleanup()
         if (abortCtrl === request.controller) abortCtrl = null
       }
     },
@@ -302,13 +288,13 @@ export function createAISDKAdapter(options: {
       config: ChatConfig,
       signal?: AbortSignal
     ): AsyncIterable<StreamChunk> {
-      const request = createRequestAbortController(signal)
+      const request = createRequestCancellation(signal)
       abortCtrl = request.controller
 
       try {
         const response = await fetch(options.endpoint, {
           method: 'POST',
-          signal: request.controller.signal,
+          signal: request.signal,
           headers: { 'Content-Type': 'application/json', ...options.headers },
           body: JSON.stringify({ messages: messagesToOpenAI(messages, config), config }),
         })
@@ -319,7 +305,7 @@ export function createAISDKAdapter(options: {
         }
 
         for await (const line of parseTextLines(response)) {
-          if (request.controller.signal.aborted) return
+          if (request.signal.aborted) return
           const trimmed = line.trim()
           if (!trimmed || !trimmed.startsWith('0:')) continue
 
@@ -337,13 +323,12 @@ export function createAISDKAdapter(options: {
 
         yield { type: 'done' }
       } catch (err: unknown) {
-        if (request.controller.signal.aborted || isAbortError(err)) return
+        if (request.signal.aborted || isAbortError(err)) return
         yield {
           type: 'error',
           error: err instanceof Error ? err.message : 'AI SDK 请求异常',
         }
       } finally {
-        request.cleanup()
         if (abortCtrl === request.controller) abortCtrl = null
       }
     },

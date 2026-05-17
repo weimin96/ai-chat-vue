@@ -253,6 +253,14 @@ function createChatState(
   function stopGeneration() {
     abortController.value?.abort()
     adapter?.abort?.()
+
+    const conv = activeConversation.value
+    const streamingMsg = conv?.messages.find(m => m.isStreaming)
+
+    if (streamingMsg) {
+      updateMessage(streamingMsg.id, { isStreaming: false })
+    }
+
     isGenerating.value = false
     void persistConversations()
   }
