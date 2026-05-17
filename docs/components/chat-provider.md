@@ -49,6 +49,40 @@ import source from '../examples/chat-provider/Basic.vue?raw'
 
 `ChatConfig` 会原样传给 `StreamAdapter.stream(messages, config, signal?)`。组件只消费与自身相关的开关，模型、系统提示词、采样参数等由适配器决定如何映射到后端请求。
 
+## useChat
+
+`ChatProvider` 会向内部组件提供 `useChat()` 状态。组合自定义聊天界面时，可以直接读取这些字段和动作：
+
+| 返回值 | 类型 | 说明 |
+| ---- | ---- | ---- |
+| `conversations` | `Ref<Conversation[]>` | 会话列表 |
+| `activeId` | `Ref<string \| null>` | 当前会话 ID |
+| `activeConversation` | `ComputedRef<Conversation \| null>` | 当前会话 |
+| `messages` | `ComputedRef<Message[]>` | 当前会话消息 |
+| `isGenerating` | `Ref<boolean>` | 是否正在生成 |
+| `isPersistenceReady` | `Ref<boolean>` | 持久化是否已完成初始化 |
+| `persistenceError` | `Ref<string \| null>` | 会话读取或保存失败原因 |
+| `isLoadingMessages` | `Ref<boolean>` | 是否正在懒加载会话消息 |
+| `messageLoadError` | `Ref<string \| null>` | 会话消息加载失败原因 |
+
+| 动作 | 说明 |
+| ---- | ---- |
+| `sendMessage(content)` | 追加用户消息并启动适配器流式回复 |
+| `stopGeneration()` | 中断当前请求、调用适配器 `abort()`，并结束当前流式消息 |
+| `retryMessage(id)` | 删除目标消息及后续消息，并重新发送最近一条用户消息 |
+| `addMessage(message)` | 手动追加消息 |
+| `updateMessage(id, updates)` | 更新当前会话内指定消息 |
+| `deleteMessage(id)` | 删除当前会话内指定消息 |
+| `createConversation(title?)` | 创建并切换到新会话 |
+| `setActive(id)` | 切换当前会话，并按需懒加载消息 |
+| `deleteConversation(id)` | 删除会话 |
+| `renameConversation(id, title)` | 重命名会话 |
+| `pinConversation(id, pinned)` | 设置会话置顶状态 |
+| `exportConversation(id, format?)` | 导出 `json`、`markdown` 或 `text` 内容 |
+| `persistConversations()` | 主动保存当前会话列表 |
+
+`stopGeneration()` 是状态收敛入口。适配器收到 Abort 后不应返回业务错误；需要展示失败时返回 `error` chunk。
+
 ## 持久化
 
 `ChatProvider` 默认只使用内存状态。需要刷新后保留会话时，可以传入持久化适配器：

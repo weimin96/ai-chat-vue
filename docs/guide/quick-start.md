@@ -46,7 +46,9 @@ const adapter: StreamAdapter = {
 
 ## 停止生成
 
-使用 `createCustomAdapter` 时，第三个参数是内部创建的 `AbortSignal`。停止生成会触发该 signal，应直接传给 `fetch`：
+`useChat().stopGeneration()` 会中断当前请求、调用适配器的 `abort()` 兜底入口，并把正在流式输出的助手消息标记为结束。
+
+使用 `createCustomAdapter` 时，第三个参数是本次生成的 `AbortSignal`。停止生成会触发该 signal，应直接传给 `fetch`：
 
 ```ts
 import { createCustomAdapter } from '@weimin96/ai-chat-vue'
@@ -67,3 +69,29 @@ const adapter = createCustomAdapter(async function* (messages, config, signal) {
   yield { type: 'done' }
 })
 ```
+
+Abort 不会被写入错误消息。需要展示业务失败时，适配器应返回 `error` chunk：
+
+```ts
+yield { type: 'error', error: '请求失败' }
+```
+
+## 刷新保留会话
+
+`ChatProvider` 可以接收持久化适配器。浏览器端本地验证可使用 `createLocalStoragePersistence()`：
+
+```ts
+import { createLocalStoragePersistence } from '@weimin96/ai-chat-vue'
+
+const persistence = createLocalStoragePersistence({
+  key: 'demo:conversations',
+})
+```
+
+```vue
+<ChatProvider :adapter="adapter" :persistence="persistence">
+  <ChatContainer />
+</ChatProvider>
+```
+
+SSR 或预渲染阶段没有可用 Storage 时，内置本地持久化会返回空会话，不会访问全局 `localStorage`。

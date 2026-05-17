@@ -9,8 +9,11 @@
 ## 核心能力
 
 - 组合式聊天容器：`ChatProvider` 与 `ChatContainer` 构成最小对话闭环。
-- 丰富消息内容：支持 Markdown、推理过程、工具调用和 Artifact。
-- 可替换适配器：通过 `StreamAdapter` 接入 OpenAI、Ollama 或自定义服务。
+- 丰富消息内容：支持 Markdown、推理过程、工具调用、代码高亮和 Artifact。
+- 可替换适配器：通过 `StreamAdapter` 接入 OpenAI、Ollama、AI SDK 或自定义服务。
+- 流式状态可控：`stopGeneration()` 会中断请求并立即结束当前流式消息。
+- 会话可持久化：通过 `ChatPersistenceAdapter` 接入本地或业务侧存储。
+- 默认安全边界：HTML Artifact 默认展示源码，Markdown 输出经过净化。
 - 可主题化：通过 CSS 变量覆盖品牌色、边框、背景和文本色。
 
 ## 快速入口
@@ -18,5 +21,6 @@
 - [安装](/guide/installation)
 - [快速开始](/guide/quick-start)
 - [主题](/guide/theme)
-- [组件总览](/components/chat-provider)
+- [适配器总览](/adapters/overview)
+- [组件总览](/components/overview)
 
